@@ -1,0 +1,13 @@
+{
+  "watch": [
+    "views/**",
+    "src/**"
+  ],
+  "ext": "ejs, js, ts, scss",
+  "ignore": [
+    "*.test.ts"
+  ],
+  "execMap": {
+    "ts": "ts-node"
+  }
+}

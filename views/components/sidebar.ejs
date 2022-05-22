@@ -1,0 +1,31 @@
+<!--<div class="secondary">-->
+
+<!--    <h2>Sidebar</h2>-->
+
+<!--    <% console.log(sidebarData) %>-->
+
+<!--    <% categories.forEach(function(cat) { %>-->
+<!--        <div>-->
+<!--            <li>-->
+<!--                <a href="/cat/<%=cat.slug%>"><%=cat.name%></a>-->
+<!--            </li>-->
+<!--        </div>-->
+<!--    <% }); %>-->
+<!--</div>-->
+
+
+<div class="secondary">
+    <h1>All Categories</h1>
+    <% if(sidebarData){ %>
+        <% Object.keys(sidebarData).forEach(function(prop) { %>
+            <h2><%- prop%></h2>
+            <div>
+               <% sidebarData[prop].forEach(function (cat){ %>
+                    <li>
+                        <a href="/<%=cat.slug%>"><%=cat.title%></a>
+                    </li>
+                <% }) %>
+            </div>
+        <% }); %>
+    <% } %>
+</div>

@@ -1,0 +1,107 @@
+
+
+
+
+<% if(isUpdated){%>
+    <h1>Update Post</h1>
+<% } else{%>
+    <h1>Add A new Post</h1>
+<% } %>
+
+
+<form action="/add-post" method="post" class="add-post-form">
+
+  <input hidden name="slug" type="text" value="<%=isUpdated && post.slug%>">
+
+  <div class="input-group">
+        <label>Post Title</label>
+        <input name="title" type="text" value="<%=isUpdated && post.title%>" placeholder="Post title">
+    </div>
+
+    <div class="input-group">
+        <label>Post Summary</label>
+        <input name="summary" type="text" value="<%=isUpdated && post.summary%>" placeholder="Post Summary">
+
+    </div>
+
+    <div class="input-group">
+        <label>Post Category</label>
+        <select name="category_slug"  value="<%=isUpdated && post.category_slug%>" >
+            <% categories.forEach(cat=>{ %>
+                <option value="<%=cat.slug%>"><%=cat.name%></option>
+            <% }) %>
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label>Post Summary</label>
+        <textarea name="content"  placeholder="Content">
+            <%=isUpdated && post.content%>
+        </textarea>
+    </div>
+
+
+    <div class="input-group">
+
+    <% if(isUpdated){%>
+        <button class="btn btn-primary">Update</button>
+    <% } else{%>
+        <button class="btn btn-primary">Add Post</button>
+    <% } %>
+
+    </div>
+
+</form>
+
+<script>
+
+    const form = document.querySelector("form")
+    form.addEventListener("submit", function (e){
+    	e.preventDefault();
+
+    	let title = document.querySelector("[name=title]").value
+    	let summary = document.querySelector("[name=summary]").value
+    	let category_slug = document.querySelector("[name=category_slug]").value
+    	let content = document.querySelector("[name=content]").value
+
+      if(!(title.trim())){
+      	alert("Please provide title")
+				return
+      }
+
+      if(!(summary.trim())){
+        alert("Please provide summary")
+				return
+      }
+      if(!(category_slug)){
+        alert("Please provide category_slug")
+				return
+      }
+      if(!(content.trim())){
+        alert("Please provide content")
+        return
+      }
+
+      fetch("/api/add-post", {
+      	method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title, summary, category_slug, content
+        })
+      }).then(res=>{
+      	if (res.status === 201){
+      		return res.json()
+        } else {
+            alert("Post not Created")
+        }
+      })
+      .then(res=>{
+        console.log(res)
+        location.replace("/")
+      })
+
+    })
+
+</script>

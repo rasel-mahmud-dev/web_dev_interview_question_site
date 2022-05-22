@@ -1,0 +1,56 @@
+<link rel="stylesheet" href="/stylesheets/hljs.css">
+
+<% if(post){ %>
+    <h1 ><%=post.title%></h1>
+<% } %>
+
+<button class="btn btn-primary block ml-auto">
+    <% if(post){ %>
+        <a href="/update-post/<%=post.slug%>">Edit</a>
+    <% } %>
+</button>
+
+<% if(post){ %>
+     <button class="btn btn-primary block ml-auto" id="del" data-slug="<%=post.slug%>">DELETE</button>
+<% } %>
+
+<div id="post-content">
+
+ <code>
+
+  </code>
+
+</div>
+
+<div id="md" hidden>  <%=html %></div>
+    asd asd asd asd asd asd
+<script>
+
+
+	const md = document.getElementById("md")
+  const content = document.getElementById("post-content")
+  content.innerHTML = md.innerText
+  md && md.remove()
+
+  const del = document.getElementById("del")
+	let slug = del.dataset.slug
+
+
+    del.addEventListener("click", (e)=>{
+
+        fetch("/api/delete-post", {
+            method: "Post",
+            body: JSON.stringify({slug: slug})
+        }).then(res=>res.json())
+            .then(r=>{
+                console.log(r)
+            }).catch(ex=>{
+            console.log(ex)
+        })
+    })
+
+
+
+
+</script>
+
