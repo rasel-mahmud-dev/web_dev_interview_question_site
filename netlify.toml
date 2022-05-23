@@ -1,15 +1,17 @@
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "index.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/"
-    }
-  ]
-}
+[functions]
+  included_files = ["views/**", "dist/**"]
+
+[build]
+  command = "npm run build"
+  functions = "functions"
+
+
+[[redirects]]
+  from = "/"
+  to = "/.netlify/functions/server"
+  status = 200
+
+# [[redirects]]
+#   from = "/static/*"
+#   to = "/.netlify/functions/server/static/*"
+#   status = 200

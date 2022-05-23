@@ -21,13 +21,12 @@
     <div class="input-group">
         <label>Post Summary</label>
         <input name="summary" type="text" value="<%=isUpdated && post.summary%>" placeholder="Post Summary">
-
     </div>
 
     <div class="input-group">
         <label>Post Category</label>
         <select name="category_slug"  value="<%=isUpdated && post.category_slug%>" >
-            <% categories.forEach(cat=>{ %>
+            <% categories && categories.forEach(cat=>{ %>
                 <option value="<%=cat.slug%>"><%=cat.name%></option>
             <% }) %>
         </select>
@@ -75,7 +74,7 @@
       }
       if(!(category_slug)){
         alert("Please provide category_slug")
-				return
+        return
       }
       if(!(content.trim())){
         alert("Please provide content")
@@ -99,7 +98,7 @@
       })
       .then(res=>{
         console.log(res)
-        location.replace("/")
+        // location.replace("/")
       })
 
     })

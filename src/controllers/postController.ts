@@ -1,8 +1,10 @@
-
-
 /* GET home page. */
 import {NextFunction, Request, Response} from "express";
-import connectDB from "../database";
+import mongoose, {Schema, Types} from "mongoose";
+import slugify from "../utils/slugify";
+
+
+
 
 
 export const getHomePage = async (req: Request, res: Response, next:NextFunction)=> {
@@ -11,51 +13,42 @@ export const getHomePage = async (req: Request, res: Response, next:NextFunction
   // let rows =  await client.execute("SELECT * from system.local")
   // console.log(rows)
   
+  
+  
   try {
-    // let a = await client.execute("INSERT INTO question.users (name, email) values(?, ?)", ['rasel', 'rasel@gmail.com'])
-    // console.log(a)
-    // // let rows = await client.execute(`CREATE TABLE question.users (name text PRIMARY KEY, email text);`)
-    // // console.log(rows)
-    //
-    
-    client = await connectDB()
-    
-    let re =  await client.execute("SELECT * from question.categories")
-    const categories = re.rows
-    
-    re =  await client.execute("SELECT slug, category_slug, title from question.questions")
-    // console.log(re.rows)
+  
     let catWithPost = {}
-    re.rows.forEach(post=>{
-      categories.findIndex(cat=>{
-        if(cat.slug === post.category_slug){
-          if(catWithPost[cat.slug]){
-            catWithPost[cat.slug] = [
-              ...catWithPost[cat.slug],
+    
+    const Post =  mongoose.model("Post")
+    let posts: any = await Post.find({})
+  
+    const Category =  mongoose.model("Category")
+    let categories: any = await Category.find({})
+  
+    categories.forEach(category=>{
+      posts.findIndex(post=>{
+        if(category.slug === post.category_slug){
+          if(catWithPost[category.slug]){
+            catWithPost[category.slug] = [
+              ...catWithPost[category.slug],
               post
             ]
           } else {
-            catWithPost[cat.slug] = [post]
+            catWithPost[category.slug] = [post]
           }
         }
       })
-      
     })
-    
-    
-    // catWithPost {
-    //   nodejs: [ Row { slug: 'asd', category_slug: 'nodejs', title: 'asd' } ]
-    // }
     
     return res.render('index', {
       title: 'Javascript-refresh',
-      posts: null,
+      posts: posts,
       html: false,
-      categories: categories,
-      sidebarData: catWithPost
+      categories: [],
+      sidebarData: {}
     });
-    
-    
+
+
   } catch (ex){
     return res.render('index', {
       title: 'Javascript-refresh',
@@ -64,7 +57,7 @@ export const getHomePage = async (req: Request, res: Response, next:NextFunction
       categories: null,
       sidebarData: null
     });
-    
+
   } finally {
     client?.shutdown()
   }
@@ -105,26 +98,97 @@ export const getHomePage = async (req: Request, res: Response, next:NextFunction
   
 }
 
+export const getSidebarData = async (req: Request, res: Response, next:NextFunction)=> {
+  
+  try {
+    let catWithPost = {}
+    
+    const Post =  mongoose.model("Post")
+    let posts: any = await Post.find({}).select("-content")
+  
+    const Category =  mongoose.model("Category")
+    let categories: any = await Category.find({})
+  
+    categories.forEach(category=>{
+      posts.findIndex(post=>{
+        if(category.slug === post.category_slug){
+          if(catWithPost[category.slug]){
+            catWithPost[category.slug] = [
+              ...catWithPost[category.slug],
+              post
+            ]
+          } else {
+            catWithPost[category.slug] = [post]
+          }
+        }
+      })
+    })
+    
+    return res.status(200).json( {
+      sidebarData: catWithPost
+    });
+
+  } catch (ex){
+    return res.status(500).json( {
+      sidebarData: null
+    });
+
+  } finally {
+  
+  }
+
+}
 
 export const getAddPostPage =  async (req: Request, res: Response, next:NextFunction)=>{
   
   let client;
   try {
-    client = await connectDB()
-    let re = await client.execute("SELECT * from question.categories")
-    let categories = re.rows
-    
+    // client = await connectDB()
+    // let re = await client.execute("SELECT * from question.categories")
+    // let categories = re.rows
+  
+    const Category = mongoose.model("Category")
+    let categories = await Category.find({})
+
     return res.render('add-post', {
       title: 'Add Post',
       post: null,
       isUpdated: false,
       html: false,
       categoryName: "Javascript Fundamental",
-      categories
+      categories: categories
     });
   } catch (ex){
-    console.log("sadf")
+  
   } finally {
-    client?.shutdown()
+  
+  }
+}
+
+export const addPostHandler =   async (req: Request, res: Response, next:NextFunction)=>{
+  
+  const {title, summary, content, category_slug, slug} = req.body
+  
+  
+  let Post = mongoose.model("Post")
+  let newPost  = new Post({
+    title,
+    summary,
+    content,
+    category_slug,
+    slug: slugify(title),
+    author_id: "6289f36aaf43d33293035508"
+  })
+  
+  try{
+    let a: any = await newPost.validate();
+    a = await newPost.save()
+    if(a){
+      res.status(201).json(a)
+    }
+    
+  } catch (ex){
+    res.status(500).json({})
+    console.log(ex.errors)
   }
 }

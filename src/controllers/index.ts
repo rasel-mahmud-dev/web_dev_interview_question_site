@@ -1,3 +1,4 @@
 import * as postController from "./postController"
+import * as userController from "./userController"
 
-export default {  postController}
+export default { userController, postController }
