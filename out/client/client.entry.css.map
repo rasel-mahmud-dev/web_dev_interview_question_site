@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../views/components/navigation.css", "../../views/pages/styles.css"],
+  "sourcesContent": [".navigation{\r\n  background: #5658cf;\r\n  color: whitesmoke;\r\n}", ".title{\r\n  color: #8ec07c;\r\n  font-family: Roboto;\r\n  font-size: 20px;\r\n}"],
+  "mappings": "AAAA,YACE,mBACA,cCFF,OACE,cACA,mBACA",
+  "names": []
+}

@@ -1,6 +1,5 @@
-import {rejects} from "assert";
+import mongoose, {Mongoose, Schema, Types} from 'mongoose';
 
-import Base from "./Base";
 
 export interface PostType{
   post_id: string
@@ -15,22 +14,25 @@ export interface PostType{
   created_at: string
 }
 
+const postSchema = new Schema({
+  title: {
+    type: String, // String is shorthand for {type: String}
+    required: [true, 'title required'],
+  },
+  summary: {
+    type: String,
+    required: [true, 'summary required'],
+  },
+  author_id: { type: mongoose.Types.ObjectId, ref: "User" },
+  slug: { type: String, index: true },
+  body: {
+    type: String,
+    required: [true, 'Body required'],
+  },
+  created_at: { type: Date, default: Date.now },
+  isPublic: Boolean
+});
 
-export default class Post extends Base{
-  private post_id: string
-  private title: string
-  private category_id: number
-  private category_name?: string
-  private slug: string
-  private cover?: string
-  private path?: string
-  private author_id: number
-  private tags: string
-  private created_at: string
 
-  constructor() {
-    super();
-  }
-  
 
-}
+mongoose.model("Post", postSchema)

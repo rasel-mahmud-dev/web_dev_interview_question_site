@@ -1,0 +1,2 @@
+import t from"../../node_modules/react/index.js";function e(){let[o,i]=t.useState([{title:"Post One"},{title:"Post Two"},{title:"Post Three"},{title:"Post Four"}]);return t.createElement("div",null,t.createElement("h1",{className:"title"},"Main App"),t.createElement("button",{onClick:()=>alert("hello")},"Click Me ssssasddddd asdasd"),o.map(s=>t.createElement("li",null,s.title)))}var a=e;export{a as default};
+//# sourceMappingURL=HomePage-BYWULTFA.js.map

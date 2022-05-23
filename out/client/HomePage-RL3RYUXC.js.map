@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../views/pages/HomePage.jsx"],
+  "sourcesContent": ["import React from 'react';\r\n\r\nimport \"./styles.css\"\r\n\r\nfunction Home() {\r\n\t\r\n\tconst [posts, setPost] = React.useState([\r\n\t\t{title: \"Post One\"},\r\n\t\t{title: \"Post Two\"},\r\n\t\t{title: \"Post Three\"},\r\n\t\t{title: \"Post Four\"},\r\n\t])\r\n\t\r\n\treturn (\r\n\t\t<div>\r\n\t\t\t<h1 className=\"title\">Main App</h1>\r\n\t\t\t<button onClick={()=>alert(\"hello\")}>Click Me ssssasddddd asdasd</button>\r\n\t\t\t{ posts.map(post=>(\r\n\t\t\t\t<li>{post.title}</li>\r\n\t\t\t)) }\r\n\t\t</div>\r\n\t)\r\n}\r\n\r\nexport default Home"],
+  "mappings": "+CAAA,MAAkB,SAIlB,YAAgB,CAEf,GAAM,CAAC,EAAO,GAAW,UAAM,SAAS,CACvC,CAAC,MAAO,UAAU,EAClB,CAAC,MAAO,UAAU,EAClB,CAAC,MAAO,YAAY,EACpB,CAAC,MAAO,WAAW,CACpB,CAAC,EAED,MACC,yBAAC,WACA,wBAAC,MAAG,UAAU,SAAQ,UAAQ,EAC9B,wBAAC,UAAO,QAAS,IAAI,MAAM,OAAO,GAAG,6BAA2B,EAC9D,EAAM,IAAI,GACX,wBAAC,UAAI,EAAK,KAAM,CAChB,CACF,CAEF,CAEA,GAAO,GAAQ",
+  "names": []
+}

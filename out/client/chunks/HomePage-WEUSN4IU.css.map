@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../views/pages/styles.css"],
+  "sourcesContent": [".title{\r\n  color: #8ec07c;\r\n  font-family: Roboto;\r\n  font-size: 20px;\r\n}"],
+  "mappings": "AAAA,OACE,cACA,mBACA",
+  "names": []
+}

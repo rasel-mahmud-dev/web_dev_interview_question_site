@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../views/pages/AboutPage.jsx"],
+  "sourcesContent": ["import React from 'react';\r\n\r\nfunction AboutPage() {\r\n\r\n\treturn (\r\n\t\t<div>\r\n\t\t\t<h1>AboutPage </h1>\r\n\t\t\t\r\n\t\t</div>\r\n\t)\r\n}\r\n\r\nexport default AboutPage"],
+  "mappings": "+CAAA,MAAkB,SAElB,YAAqB,CAEpB,MACC,yBAAC,WACA,wBAAC,UAAG,YAAU,CAEf,CAEF,CAEA,GAAO,GAAQ",
+  "names": []
+}
