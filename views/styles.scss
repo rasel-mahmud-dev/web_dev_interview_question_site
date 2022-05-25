@@ -1,0 +1,80 @@
+@import "./scss/style";
+@import "./scss/mixins";
+
+
+:root {
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --font-family-code: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+  --body-bg-color: #fff;
+  --text-color: #212529;
+  --para-color: #212121;
+  --primary-color: #6a83ff;
+  --secondary-color: #ffb84b;
+  --header-bg-color: #fff;
+  --header-border-color: #e7ebed;
+  --heading-color: #374151;
+  --sidebar-bg-color: rgba(218, 218, 218, 0.14);
+  --white: #fff;
+  --link-color: #00B7FF;
+}
+
+
+
+
+html[data-theme="dark"] {
+  --body-bg-color: #171717;
+  --text-color: #e3e3e3;
+  --para-color: #f5f5f5;
+  --heading-color: #f5f5f5;
+  --sidebar-bg-color: rgb(124 124 124 / 14%);
+  //--primary-color: #4db2ff;
+  --header-bg-color: #171717;
+  --header-border-color: #454545
+}
+.mr-auto{
+  margin-right: auto;
+}.ml-auto{
+   margin-left: auto;
+ }
+.block{display: block}
+.flex{display: flex}
+
+
+.add-post-form{
+  backdrop-filter: blur(303px);
+  margin: 30px auto;
+  display: block;
+  width: 100%;
+  
+  .input-group {
+    display: flex;
+    margin: 20px 0;
+    
+    @include get_down(576px){
+      display: flex;
+      flex-direction: column;
+    }
+   
+    
+    label {
+      max-width: 120px;
+      width: 100%;
+      font-weight: 500;
+      display: inline-block;
+    }
+    
+    input, textarea, select {
+      border: 1.5px solid var(--primary-color);
+      border-radius: 4px;
+      outline: none;
+      padding: 5px 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    textarea{
+      box-sizing: border-box;
+      min-height: 100px;
+      max-width: 100%;
+    }
+  }
+}

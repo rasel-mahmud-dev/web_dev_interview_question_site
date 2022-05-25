@@ -4,7 +4,7 @@ db
 src/markdowns
 src/db
 
-
+fortawesome
 # API keys and secrets
 .env
 

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 
 const { marked } = require("marked")
 
@@ -48,43 +49,41 @@ function errorHtml(title: string){
 
 
 
-import render from 'preact-render-to-string';
-import { h } from 'preact';
 
 const routes = (app: Application)=> {
   
-  
-  app.get("/inject.js.map", (req, res) => {
-    res.json([])
-  })
-  
+
   function getTimeZone() {
     var offset = new Date().getTimezoneOffset(), o = Math.abs(offset);
     return (offset < 0 ? "+" : "-") + ("00" + Math.floor(o / 60)).slice(-2) + ":" + ("00" + (o % 60)).slice(-2);
   }
   
   
-
   
-  app.get('/', postController.getHomePage)
+  // app.get('/', postController.getHomePage)
+  
   app.post("/api/registration", userController.userRegistration)
   
+  app.post("/api/post", postController.getPost)
+  app.post("/api/login", userController.userLogin)
+  app.get("/api/fetch-login", userController.fetchLogin)
+  app.get("/api/logout", userController.logout)
   
-
-  /* GET Add Post Page */
-  app.get('/add-post', postController.getAddPostPage)
+  
+  /* GET update post page  */
+  // app.get('/update-post/:slug', postController.getUpdatePostPage)
   
   
   // save a new post
-  
   app.post('/api/add-post', postController.addPostHandler)
-  
-  
+  app.post('/api/update-post', postController.updatePost)
   app.post('/api/sidebar_data', postController.getSidebarData)
   
   
+  app.get('/api/categories', postController.getCategories)
+  
 
-  // /* GET post page. */
+  /* GET post page. */
   // app.get('/:post_slug', async function (req: Request, res: Response, next:NextFunction) {
   //
   //   let client
@@ -164,45 +163,104 @@ const routes = (app: Application)=> {
   //     client?.shutdown()
   //   }
   // })
+  
+  /* GET post page. */
+  // app.get('/:category_slug/:post_slug', async function (req: Request, res: Response, next:NextFunction) {
+  //
+  //   let client
+  //   // let rows =  await client.execute("SELECT * from system.local")
+  //   // console.log(rows)
   //
   //
-  //
-  //
-  //
-  // /* GET update post page  */
-  // app.get('/update-post/:slug', async function (req: Request, res: Response, next:NextFunction) {
-  //
-  //   let client;
   //   try {
-  //   client = await connectDB()
-  //     let re = await client.execute("SELECT * from question.categories")
-  //     let categories = re.rows
+  //     const {post_slug, category_slug} = req.params
+  //     const Post = mongoose.model("Post")
+  //     if(category_slug){
+  //       let post = await Post.findOne({category_slug: category_slug})
+  //       return res.render('posts/details', {
+  //         title: 'javascript-refresh',
+  //         post: post,
+  //       })
+  //     }
+  //
+  //     // let a = await client.execute("INSERT INTO question.users (name, email) values(?, ?)", ['rasel', 'rasel@gmail.com'])
+  //     // console.log(a)
+  //     // // let rows = await client.execute(`CREATE TABLE question.users (name text PRIMARY KEY, email text);`)
+  //     // // console.log(rows)
+  //     //
+  //
+  //     // client = await connectDB()
+  //
+  //     // let re =  await client.execute("SELECT * from question.categories")
+  //     // const categories = re.rows
+  //     //
+  //     // re =  await client.execute("SELECT slug, category_slug, title from question.questions")
+  //     // // console.log(re.rows)
+  //     // let catWithPost = {}
+  //     // re.rows.forEach(post=>{
+  //     //   categories.findIndex(cat=>{
+  //     //     if(cat.slug === post.category_slug){
+  //     //       if(catWithPost[cat.slug]){
+  //     //         catWithPost[cat.slug] = [
+  //     //           ...catWithPost[cat.slug],
+  //     //           post
+  //     //         ]
+  //     //       } else {
+  //     //         catWithPost[cat.slug] = [post]
+  //     //       }
+  //     //     }
+  //     //   })
+  //     //
+  //     // })
   //
   //
-  //     re =  await client.execute(
-  //       "SELECT * from question.questions where slug = ?",
-  //       [req.params.slug]
-  //     )
+  //     // catWithPost {
+  //     //   nodejs: [ Row { slug: 'asd', category_slug: 'nodejs', title: 'asd' } ]
+  //     // }
   //
-  //     let post = re.rows[0]
+  //     // let re =  await client.execute(
+  //     //   "SELECT slug, category_slug, content, title from question.questions where slug = ?",
+  //     //   [req.params.post_slug]
+  //     // )
+  //     //
+  //     // let post = re.rows[0]
+  //     // if(post) {
+  //     //
+  //     //   let html = marked.parse(post.content)
+  //     //
+  //     //   return res.render('posts/details', {
+  //     //     title: 'javascript-refresh',
+  //     //     post: post,
+  //     //     html,
+  //     //     posts: null,
+  //     //     categories: [],
+  //     //     sidebarData: false
+  //     //   });
+  //     // } else {
+  //     //
+  //     //   return res.render('posts/details', {
+  //     //     title: 'javascript-refresh',
+  //     //     post: post,
+  //     //     html: "",
+  //     //     posts: null,
+  //     //     categories: [],
+  //     //     sidebarData: false
+  //     //   });
+  //     // }
   //
-  //     return res.render('add-post', {
-  //       title: 'Update Post',
-  //       isUpdated: true,
-  //       post: post,
-  //       categoryName: "Javascript Fundamental",
-  //       categories
-  //     });
   //   } catch (ex){
+  //     console.log(ex)
   //
   //   } finally {
   //     client?.shutdown()
   //   }
   // })
-  //
-  //
-  //
-  // // Action new post or update post
+  
+  
+  
+  
+
+  // Action new post or update post
   // app.post('/api/add-post', async function (req: Request, res: Response, next:NextFunction) {
   //
   //   const {title, summary, content, category_slug, slug} = req.body
@@ -262,5 +320,7 @@ const routes = (app: Application)=> {
   //
 }
 
-module.exports = routes
+
+// module.exports = routes
+
 export default routes

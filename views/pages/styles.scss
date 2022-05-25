@@ -1,0 +1,34 @@
+.title{
+  color: #8ec07c;
+  font-family: Roboto;
+  font-size: 30px;
+}
+pre{
+  white-space: pre-line;
+}
+
+.action_icons{
+  position: fixed;
+  top: 100px;
+  right: 20px;
+}
+.icon{
+  width: 15px;
+  margin-left: 10px;
+}
+
+.times-icon{
+  width: 12px;
+  margin-right: 20px !important;
+}
+
+.content_edit_mode{
+  border: 1px solid #8ec07c;
+  outline: none;
+}
+.content{
+  p{
+    font-family: Rubik;
+    font-weight: 400;
+  }
+}

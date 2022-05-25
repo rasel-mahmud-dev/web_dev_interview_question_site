@@ -19,10 +19,12 @@ liveReloadServer.server.once("connection", ()=>{
 })
 app.use(connectLiveReload())
 
-app.use("/.netlify/functions/server/static/", express.static(path.resolve("src/public")))
+app.use("/.netlify/functions/server/static/", express.static(path.resolve("dist/public")))
 
-let routes = require("../src/routes")
-routes(app)
+// import routes from "../src/routes"
+// routes(app)
 
-app.listen(1000, () => console.log("server is running on port 1000"))
+const PORT = process.env.PORT || 1000
+
+app.listen(PORT, "0.0.0.0", () => console.log("server is running on port 1000"))
 

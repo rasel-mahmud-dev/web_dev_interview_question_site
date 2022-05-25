@@ -23,7 +23,7 @@ const postSchema = new Schema({
     type: String,
     required: [true, 'summary required'],
   },
-  author_id: { type: mongoose.Types.ObjectId, ref: "User" },
+  author_id: { type: Schema.Types.ObjectId, ref: "User" },
   slug: { type: String, index: true },
   category_slug: { type: String, index: true,  required: [true, 'category_slug required'], },
   content: {

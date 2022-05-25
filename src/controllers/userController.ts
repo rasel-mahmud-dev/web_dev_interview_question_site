@@ -4,6 +4,12 @@
 import {NextFunction, Request, Response} from "express";
 import mongoose from "mongoose";
 
+interface RequestWithSession extends Request{
+  session: {
+    user_id: string,
+    role: string
+  } | null
+}
 
 
 export const userRegistration = async (req: Request, res: Response, next:NextFunction)=> {
@@ -134,3 +140,107 @@ export const userRegistration = async (req: Request, res: Response, next:NextFun
   
 }
 
+
+
+export const userLogin = async (req: RequestWithSession, res: Response, next:NextFunction)=> {
+
+  const { username, email, password } = req.body
+  
+  let client;
+  
+  try{
+  
+    client = await mongoose.connect(process.env.MONGO_DB_URI)
+    
+    let User = mongoose.model("User")
+    let user: any = await User.findOne({email: email})
+    if(!user){
+      return  res.status(404).json({message: "User not registered"})
+    }
+    
+    if(user.password !== password){
+      return  res.status(404).json({message: "User password not match"})
+    }
+    
+    req.session.user_id = user._id.toString();
+    req.session.role = user.role;
+ 
+    return res.status(201).json({
+      email: user.email,
+      username: user.username,
+      avatar: user.avatar,
+      role: user.role
+    })
+    
+    
+    
+  } catch (error){
+    return  res.status(500).json({message: error.message})
+    
+    let errors = {}
+  
+    if (error.name === "ValidationError") {
+      let errors = {};
+  
+      Object.keys(error.errors).forEach((key) => {
+        errors[key] = error.errors[key].message;
+      });
+  
+      return res.status(409).json({message: "", errors: errors})
+    }
+    res.status(500).send("Something went wrong");
+  } finally {
+    client?.disconnect();
+  }
+  
+  
+}
+
+export const fetchLogin = async (req: RequestWithSession, res: Response, next:NextFunction)=> {
+  
+  let client;
+  
+  try{
+  
+    if(req.session && req.session.user_id){
+      
+      client = await mongoose.connect(process.env.MONGO_DB_URI)
+  
+      let User = mongoose.model("User")
+      
+      let user: any = await User.findOne({_id: req.session.user_id})
+      
+      if (!user) {
+        return res.status(404).json({message: "User not registered"})
+      }
+  
+    
+      return res.status(201).json({
+        email: user.email,
+        username: user.username,
+        avatar: user.avatar,
+        role: user.role
+      })
+    } else {
+      return res.status(404).json({message: "please login first"})
+    }
+    
+    
+  } catch (error){
+    return  res.status(500).json({message: error.message})
+    
+  } finally {
+    client?.disconnect();
+  }
+  
+  
+}
+
+
+export const logout = async (req: RequestWithSession, res: Response, next:NextFunction)=>{
+  
+  if(req.session) {
+    req.session = null
+    res.status(201).json({message: "You are logout"});
+  }
+}
