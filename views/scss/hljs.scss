@@ -1,13 +1,13 @@
 .hljs {
   display: block;
   overflow-x: auto;
-  padding: .5em;
-  background: #282828
-  
+  padding: 0.8em;
+  background: var(--code-bg)
 }
 
+
 .hljs, .hljs-subst {
-  color: #ebdbb2
+  color: var(--para-color)
 }
 
 .hljs-deletion, .hljs-formula, .hljs-keyword, .hljs-link, .hljs-selector-tag {

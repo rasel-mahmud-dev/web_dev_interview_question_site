@@ -8,6 +8,7 @@ import slugify from "../utils/slugify";
 import * as postController from "../controllers/postController";
 import {userRegistration} from "../controllers/userController";
 import * as userController from "../controllers/userController";
+import {admin, auth} from "../middleware";
 
 
 marked.setOptions({
@@ -75,8 +76,10 @@ const routes = (app: Application)=> {
   
   
   // save a new post
-  app.post('/api/add-post', postController.addPostHandler)
-  app.post('/api/update-post', postController.updatePost)
+  app.post('/api/add-post', admin, postController.addPostHandler)
+  app.post('/api/add-category', admin, postController.addCategoryHandler)
+  app.post('/api/update-post', admin, postController.updatePost)
+  
   app.post('/api/sidebar_data', postController.getSidebarData)
   
   

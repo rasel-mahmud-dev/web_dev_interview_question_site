@@ -1,7 +1,7 @@
 import {ActionTypes} from "./types";
 
 
-export function appReducer(state, action){
+export function postReducer(state, action){
   switch (action.type){
     
     case ActionTypes.FETCH_SIDEBAR_DATA :
@@ -42,6 +42,22 @@ export function authReducer(state, action){
       state = action.payload
       
       return state;
+      
+    default:
+      return  state
+  }
+}
+
+
+export function appReducer(state, action){
+  switch (action.type){
+    case ActionTypes.TOGGLE_THEME :
+      state = {
+        ...state,
+        theme: action.payload
+      }
+      return state;
+      
       
     default:
       return  state

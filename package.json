@@ -5,17 +5,15 @@
   "scripts": {
     "start": "node out/server/app.js",
     "tsc": "tsc",
-    "build": "npm-run-all --parallel tsc copy",
+    "build": "npm-run-all -s client:build server:build copy",
     "copy": "ts-node copyStaticAssets.ts",
-    "build:client": "node config/client.build.js",
-    "build:server": "node config/server.build.js",
+    "client:dev": "set NODE_ENV=development&node config/client.build.js",
+    "client:build": "node config/client.build.js",
+    "server:build": "node config/server.build.js",
     "ts-dev": "set NODE_ENV=development&set NODE_SCOPE=local&nodemon src/local-server.ts",
-    "ts-dev-fn": "set NODE_ENV=development&set NODE_SCOPE=local&nodemon functions/server.ts",
-    "dev": "set NODE_ENV=development&set NODE_SCOPE=local&npm-run-all --parallel ts-dev watch-sass",
-    "dev2": "set NODE_ENV=development&set NODE_SCOPE=local&npm-run-all --parallel build:server build:client",
-    "dev3": "set NODE_ENV=development&set NODE_SCOPE=local&npm-run-all --parallel browser:sync ts-dev",
-    "watch-sass": "sass --watch src\\public\\stylesheets:dist\\public\\stylesheets",
-    "browser:sync": "browser-sync start --config bs-config.js"
+    "dev": "set NODE_ENV=development&set NODE_SCOPE=local&npm-run-all -p browser:sync  client:dev ts-dev",
+    "browser:sync": "browser-sync start --config bs-config.js",
+    "dev3": "etsc"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
@@ -30,6 +28,7 @@
     "dotenv": "^16.0.1",
     "ejs": "^3.1.8",
     "esbuild": "^0.14.39",
+    "esbuild-node-tsc": "^1.8.5",
     "esbuild-sass-plugin": "^2.2.6",
     "express": "^4.17.3",
     "express-ejs-layouts": "^2.5.1",
@@ -38,6 +37,7 @@
     "marked": "^4.0.14",
     "mongoose": "^6.3.4",
     "preact": "^10.7.2",
+    "preact-lazy-route": "^1.0.1",
     "preact-router": "^4.0.1",
     "react": "^18.1.0",
     "react-router-dom": "^6.3.0",
@@ -53,6 +53,7 @@
     "livereload": "^0.9.3",
     "morgan": "^1.10.0",
     "npm-run-all": "^4.1.5",
+    "preact-async-route": "^2.2.1",
     "sass": "^1.50.1",
     "shelljs": "^0.8.5",
     "typescript": "^4.6.3"

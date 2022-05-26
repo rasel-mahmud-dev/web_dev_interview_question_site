@@ -5,11 +5,14 @@ import {useEffect, useState} from "preact/hooks";
 import {ActionTypes, Post} from "../store/types";
 import api from "../apis";
 import InputGroup from "../components/InputGroup";
-
+import errorMessage from "../response/errorResponse";
+import SweetAlert from "./SweetAlert";
 
 
 
 const AddPost = (props)=>{
+  
+  const [message, setMessage] = React.useState("")
   
   const {categories} = props.postState
   
@@ -23,6 +26,8 @@ const AddPost = (props)=>{
     summary: "",
     content: ""
   })
+  
+  const [categoryName, setCategoryName] = React.useState("")
   
   useEffect(()=>{
    
@@ -85,15 +90,68 @@ const AddPost = (props)=>{
   }
   
   
+  function saveCategory(e) {
+    e.preventDefault();
+    setMessage("")
+  
+    if( (!props.authState) || (!props.authState._id) ){
+      setMessage("Please login first")
+      return
+    }
+    
+    if(!categoryName){
+      setMessage("Category Name Required.")
+      return
+    }
+    
+    api.post("/api/add-category", {categoryName: categoryName}).then(response => {
+      if(response.status === 201){
+        props.actions.dispatch({
+          type: ActionTypes.FETCH_CATEGORIES,
+          payload: [...props.postState.categories, response.data]
+        })
+      }
+    }).catch(ex => {
+      setMessage(errorMessage(ex))
+    })
+  }
+  
   function savePost(e){
     e.preventDefault();
+    setMessage("")
+    
+    if( (!props.authState) || (!props.authState._id) ){
+      setMessage("Please login first")
+      return
+    }
+    
     
     
     if(props.path  === "/add-post"){
-    
-    } else {
   
-      console.log(post)
+      const { __v, created_at, _id, author_id, slug, ...data} = post
+      let inComplete = ""
+      let isFilled = true
+      for (let postKey in data) {
+        if(!data[postKey]) {
+          inComplete = postKey
+          isFilled = false
+        }
+      }
+  
+      if(isFilled){
+        api.post("/api/add-post", {...data, author_id: props.authState._id}).then(response => {
+          if(response.status === 201){
+            setMessage("post has been saved")
+          }
+        }).catch(ex => {
+          setMessage(errorMessage(ex))
+        })
+      } else {
+        setMessage("Please provide " + inComplete )
+      }
+      
+    } else {
       
       if(post){
         const { __v, created_at, ...data} = post
@@ -112,22 +170,21 @@ const AddPost = (props)=>{
               alert("post updated" )
             }
           }).catch(ex => {
-            console.log(ex.message)
+            setMessage(errorMessage(ex))
           })
         } else {
-          alert("Please provide " + inComplete )
+          setMessage("Please provide " + inComplete )
         }
-        
       }
-      
     }
-    
   }
   
   
   return (
     <div>
-
+      
+      <SweetAlert onClose={()=>setMessage("")} message={message} />
+      
 
       <form onSubmit={savePost}  className="add-post-form">
         
@@ -176,6 +233,23 @@ const AddPost = (props)=>{
             <button type="submit" className="btn btn-primary">{ props.path  === "/add-post" ? "Add Post" : "Update"}</button>
           </div>
       </form>
+  
+      
+      <form onSubmit={saveCategory}  className="add-post-form">
+    
+        <h1>Add a Category</h1>
+    
+    
+        <InputGroup
+          label="Category Name"
+          value={categoryName}
+          type="text"
+          placeholder="Name"
+          onChange={(e)=>setCategoryName(e.target.value)}
+         name="category-name"/>
+        <button className="btn btn-primary">Add A Category</button>
+      </form>
+
     </div>
     
   )

@@ -5,8 +5,6 @@ import slugify from "../utils/slugify";
 
 
 
-
-
 export const getHomePage = async (req: Request, res: Response, next:NextFunction)=> {
   
   let client;
@@ -62,7 +60,6 @@ export const getCategories = async (req: Request, res: Response, next:NextFuncti
   let client;
   
   try {
-    client = await mongoose.connect(process.env.MONGO_DB_URI)
     const Category =  mongoose.model("Category")
     let categories: any = await Category.find({})
     
@@ -71,18 +68,16 @@ export const getCategories = async (req: Request, res: Response, next:NextFuncti
     return res.status(500).json( null);
 
   } finally {
-    client?.disconnect()
+  
   }
 
 }
 
 export const getSidebarData = async (req: Request, res: Response, next:NextFunction)=> {
-  
-  let client;
+
   
   try {
     let catWithPost = {}
-    client = await mongoose.connect(process.env.MONGO_DB_URI)
     
     const Post =  mongoose.model("Post")
     let posts: any = await Post.find({}).select("-content")
@@ -116,7 +111,7 @@ export const getSidebarData = async (req: Request, res: Response, next:NextFunct
     });
 
   } finally {
-    // client?.disconnect()
+  
   }
 
 }
@@ -124,12 +119,7 @@ export const getSidebarData = async (req: Request, res: Response, next:NextFunct
 export const getPost = async (req: Request, res: Response, next:NextFunction)=> {
   
   const {slug, withCategories = false}  = req.body
-  let client;
   try {
-
-  
-    const uri = process.env.MONGO_DB_URI
-    client = await mongoose.connect(uri)
     
     const Post =  mongoose.model("Post")
     let post = await Post.findOne({slug: slug})
@@ -142,18 +132,13 @@ export const getPost = async (req: Request, res: Response, next:NextFunction)=> 
     return res.status(500).json( null);
 
   } finally {
-    client?.disconnect()
+  
   }
 }
 
 export const getAddPostPage =  async (req: Request, res: Response, next:NextFunction)=>{
   
-  let client;
   try {
-    // client = await connectDB()
-    // let re = await client.execute("SELECT * from question.categories")
-    // let categories = re.rows
-  
     const Category = mongoose.model("Category")
     let categories = await Category.find({})
 
@@ -176,6 +161,7 @@ export const getUpdatePostPage =  async (req: Request, res: Response, next:NextF
     title: 'Update Post'
   });
 }
+
 export const addPostHandler =   async (req: Request, res: Response, next:NextFunction)=>{
   
   const {title, summary, content, category_slug, slug} = req.body
@@ -204,15 +190,43 @@ export const addPostHandler =   async (req: Request, res: Response, next:NextFun
   }
 }
 
+
+export const addCategoryHandler =   async (req: Request, res: Response, next:NextFunction)=>{
+  const {categoryName} = req.body
+  let Category = mongoose.model("Category")
+  let cat = await Category.findOne({slug:  slugify(categoryName)})
+  if(cat) {
+    return res.status(409).json({message: "Category already exists"})
+  }
+  
+  let newCategory  = new Category({
+    name: categoryName,
+    slug: slugify(categoryName)
+  })
+  
+  
+  try{
+    newCategory = await newCategory.save()
+    if(newCategory) {
+      res.status(201).send({
+        name: newCategory.name,
+        slug: newCategory.slug,
+        _id: newCategory._id
+      })
+    } else {
+      res.status(500).json({message: "category not save"})
+    }
+  } catch (ex){
+    res.status(500).json({message: ex.message})
+  }
+}
+
 export const updatePost =   async (req: Request, res: Response, next:NextFunction)=>{
   
   const {_id} = req.body
-  let client;
+
   try {
     
-    const uri = process.env.MONGO_DB_URI
-    client = await mongoose.connect(uri)
-  
     let Post = mongoose.model("Post")
     let isUpdated  = await Post.updateOne(
       {_id: _id}, {
@@ -232,6 +246,6 @@ export const updatePost =   async (req: Request, res: Response, next:NextFunctio
    
     
   } finally {
-    client?.disconnect()
+  
   }
 }

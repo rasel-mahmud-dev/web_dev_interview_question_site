@@ -6,6 +6,7 @@ export enum ActionTypes {
   ADD_POST = "ADD_POST",
   LOGIN = "LOGIN",
   LOGOUT = "LOGOUT",
+  TOGGLE_THEME = "TOGGLE_THEME",
 }
 
 export interface Post {

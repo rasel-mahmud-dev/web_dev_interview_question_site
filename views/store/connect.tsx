@@ -3,7 +3,7 @@ import React, {PureComponent} from 'preact/compat';
 import { AppContext, AuthContext } from './index';
 
 
-import {appReducer, authReducer} from "./reducer"
+import {appReducer, authReducer, postReducer} from "./reducer"
 
 
 
@@ -19,14 +19,20 @@ export const Provider = (APP)=> {
           post: null,
           sidebarData: {},
         },
-        authState: null
+        authState: null,
+        appState: {
+          theme: "light" // "dark"
+        }
       }
       
       this.actions = {
         dispatch: (action: {type: string, payload: any})=>{
-          let a = appReducer(this.state.postState, action)
-          let b = authReducer(this.state.authState, action)
-          let updatedState = {...this.state, postState: a, authState:  b}
+          let updatedState = {
+            ...this.state,
+            postState: postReducer(this.state.postState, action),
+            authState: authReducer(this.state.authState, action),
+            appState: appReducer(this.state.appState, action),
+          }
           this.setState({...this.state, ...updatedState})
         }
       }
@@ -37,7 +43,7 @@ export const Provider = (APP)=> {
     
     render(){
       return (
-        <AppContext.Provider value={{postState: this.state.postState, actions: this.actions }}>
+        <AppContext.Provider value={{postState: this.state.postState, appState: this.state.appState, actions: this.actions }}>
           <AuthContext.Provider value={this.state.authState}>
             <APP {...this.props} />
           </AuthContext.Provider>
@@ -56,7 +62,7 @@ const connect = (HOC)=>{
           <AuthContext.Consumer>
             {(authState)=>{
               return (
-                <HOC {...props} authState={authState} postState={value.postState} actions={value.actions} />
+                <HOC {...props} authState={authState} appState={value.appState} postState={value.postState} actions={value.actions} />
               )
             }}
           </AuthContext.Consumer>

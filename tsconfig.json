@@ -20,7 +20,8 @@
     "src"
   ],
   "exclude": [
-    "dist"
+    "dist",
+    "node_modules"
   ],
   "ts-node": {
     "compilerOptions": {

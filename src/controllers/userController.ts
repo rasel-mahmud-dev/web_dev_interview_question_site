@@ -146,12 +146,9 @@ export const userLogin = async (req: RequestWithSession, res: Response, next:Nex
 
   const { username, email, password } = req.body
   
-  let client;
+
   
   try{
-  
-    client = await mongoose.connect(process.env.MONGO_DB_URI)
-    
     let User = mongoose.model("User")
     let user: any = await User.findOne({email: email})
     if(!user){
@@ -190,7 +187,7 @@ export const userLogin = async (req: RequestWithSession, res: Response, next:Nex
     }
     res.status(500).send("Something went wrong");
   } finally {
-    client?.disconnect();
+  
   }
   
   
@@ -198,13 +195,13 @@ export const userLogin = async (req: RequestWithSession, res: Response, next:Nex
 
 export const fetchLogin = async (req: RequestWithSession, res: Response, next:NextFunction)=> {
   
-  let client;
+
   
   try{
   
     if(req.session && req.session.user_id){
       
-      client = await mongoose.connect(process.env.MONGO_DB_URI)
+
   
       let User = mongoose.model("User")
       
@@ -230,7 +227,7 @@ export const fetchLogin = async (req: RequestWithSession, res: Response, next:Ne
     return  res.status(500).json({message: error.message})
     
   } finally {
-    client?.disconnect();
+  
   }
   
   

@@ -1,20 +1,31 @@
 const esbuild = require('esbuild')
 
+const isDev = process.env.NODE_ENV !== "development"
+
 // server bundler
 esbuild.build({
-	entryPoints: ["functions/server.ts"],
+	entryPoints: ["src/index.ts"],
 	bundle: true,
-	minify: false,
-	sourcemap: true,
-	outdir: "build",
-	chunkNames: "chunks/[name]-[hash]",
+	keepNames: true,
+	sourcemap: 'external',
+	outdir: "dist",
 	platform: "node",
-	target: "node16.4",
-	format:"esm",
-	watch: true,
+	watch: isDev ? {
+		onRebuild(error, result) {
+			if (error) {
+				console.error('watch build failed:', error)
+			} else {
+				console.log('watch build succeeded:', result)
+			}
+		},
+	} :  false,
 	external: ["./node_modules/*"],
-	incremental: true,
-	splitting: true,
+	minify: !isDev, // Compressed code
+	// splitting: true,
+	format: "cjs",
+	target: ["node16"],
+	incremental: false,
+	assetNames: 'assets/[name]-[hash]'
 })
 	.then(r=>{
 		console.log("server building...")
@@ -23,5 +34,6 @@ esbuild.build({
 		process.exit(1)
 		console.log(ex)
 	})
-	
-	
+
+
+

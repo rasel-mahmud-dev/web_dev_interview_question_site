@@ -1,19 +1,31 @@
 import { render } from 'preact';
+
 import React from 'preact/compat';
+
 import { PureComponent } from 'preact/compat';
 import connect, {Provider} from "./store/connect";
 import HomePage from "./pages/HomePage";
 import Navigation from "./components/Navigation";
 import Router, {Route} from "preact-router";
-import PostDetail from "./pages/PostDetail";
-import AddPost from "./pages/AddPost";
+
+import LazyRoute from 'preact-lazy-route';
+
 
 import "./styles.scss"
-import LoginPage from "./pages/LoginPage";
+
 import api from "./apis";
 import {ActionTypes} from "./store/types";
 
 import { createHashHistory } from 'history';
+
+
+function MyLoadingComponent(){
+  return (
+    <div>
+      <h1>Loading...DDD</h1>
+    </div>
+  )
+}
 
 class App extends PureComponent {
   
@@ -28,23 +40,55 @@ class App extends PureComponent {
       .catch(ex=>{
         console.log(ex)
       })
+  
+    
+    let html = document.getElementById("html")
+    let theme = window.localStorage.getItem("theme")
+    html.setAttribute("data-theme", theme)
+    this.props.actions.dispatch({
+      type: ActionTypes.TOGGLE_THEME,
+      payload: theme
+    })
+    
+    
   }
   
   
   render(props) {
-    
     return (
       <div>
         <Navigation />
         <div class="spacer"/>
         <div className="container">
-          <Router history={createHashHistory()}>
+          <Router history={createHashHistory()} >
             <Route index={true} path="/" component={HomePage} />
-            <Route index={true} path="/about" component={HomePage} />
-            <Route index={true} path="/login" component={LoginPage} />
-            <Route index={true} path="/add-post" component={AddPost} />
-            <Route index={true} path="/update-post/:slug" component={AddPost} />
-            <Route index={true} path="/:category_slug/:slug" component={PostDetail} />
+  
+            <LazyRoute
+              path="/login"
+              component={() => import('./pages/LoginPage')}
+              loading={MyLoadingComponent}
+            />
+            
+              <LazyRoute
+                path="/add-post"
+                component={() => import('./pages/AddPost')}
+                loading={MyLoadingComponent}
+              />
+              <LazyRoute
+                path="/:category_slug/:slug"
+                component={() => import('./pages/PostDetail')}
+                loading={MyLoadingComponent}
+              />
+             
+  
+            <LazyRoute
+              path="/update-post/:slug"
+              component={() => import('./pages/AddPost')}
+              loading={MyLoadingComponent}
+            />
+            
+            
+            {/*<Route index={true} path="/:category_slug/:slug" component={PostDetail} />*/}
           </Router>
         </div>
       </div>

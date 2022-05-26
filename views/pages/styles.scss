@@ -1,20 +1,32 @@
+@import "../scss/mixins.scss";
+
 .title{
   color: #8ec07c;
-  font-family: Roboto;
   font-size: 30px;
 }
 pre{
   white-space: pre-line;
 }
 
-.action_icons{
-  position: fixed;
-  top: 100px;
-  right: 20px;
+.action_icons__root {
+  display: flex;
+  justify-content: end;
+  .action_icons {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 100px;
+  }
 }
 .icon{
+  display: flex;
   width: 15px;
   margin-left: 10px;
+  color: var(--para-color);
+  fill: var(--para-color);
+  @include get_down(576px){
+    width: 19px !important;
+  }
 }
 
 .times-icon{
@@ -28,7 +40,83 @@ pre{
 }
 .content{
   p{
-    font-family: Rubik;
+    font-family: Rubik, serif;
     font-weight: 400;
+  }
+}
+.mdEditor{
+  width: 100%;
+  max-width: 100%;
+  background: var(--input-bg-color);
+  color: var(--heading-color);
+  font-family: Rubik, serif;
+  font-weight: 400;
+  
+  &::-webkit-resizer {
+    width: 100px;
+    height: 100px;
+
+  }
+  
+}
+
+#preview-md{
+  *{
+    white-space: pre-wrap !important;
+  }
+  
+  ul, li {
+    margin: 0;
+    padding: 0;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 0
+  }
+  
+  ul {
+    line-height: 14px;
+    margin-left: 15px;
+  }
+  
+  
+  code{
+    font-family: monospace,monospace !important ;
+  }
+  h1,h2,h3,h4,h5,h6{
+    color: var(--heading-color);
+    margin: 10px 0px;
+    display: inline-block;
+  }
+  P {
+    white-space: pre-wrap !important;
+    color: var(--para-color);
+    margin: 6px 0px;
+  }
+  li{
+    padding: 0;
+    margin: 0 0 0rem 1rem;
+  }
+  img{
+    width: 100%;
+    display: flex;
+  }
+}
+
+.category_name{
+  margin: 0;
+  padding: 0;
+  margin-top: 15px;
+}
+.post{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1px;
+  transition: all .3s ease;
+  padding: 5px 10px;
+  &:hover{
+    background: var(--primary-color);
   }
 }

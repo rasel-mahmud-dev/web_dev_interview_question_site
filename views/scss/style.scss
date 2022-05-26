@@ -4,9 +4,7 @@ body {
   margin: 0;
   padding: 0;
   font-size: 16px;
-  font-family: Calibri,sans-serif;
   background: var(--body-bg-color);
-  
 }
 
 a {
@@ -44,73 +42,8 @@ ul, li{
   }
 }
 
-.secondary{
-  min-width: 300px;
-  transition: min-width .3s ease-in-out;
-  //height: calc(100vh - 180px);
-  background: var(--sidebar-bg-color);
-  padding: 20px;
-  margin-left: 10px;
-  list-style: none!important;
-   li{
-    padding: 5px 0px;
-    list-style: none!important;
-    a{
-      text-decoration: none;
-      color: var(--para-color);
-      &:hover{
-        color: var(--link-color);
-      }
-    }
-  }
-  
-  @include get_down(1208px){
-    min-width: 230px;
-  }
-  
-  @include get_down(900px){
-    display: none;
-  }
 
-}
 .flex-1{flex: 1}
-.category-content-map {
-  width: 100%;
-  display: block;
- 
-  .each_section {
-    border: 1px solid rgba(124, 124, 124, 0.33);
-    padding: 5px 30px 30px 30px;
-    margin: 30px; border-radius: 20px;
-    @include get_down(768px){
-      padding: 20px;
-      margin: 20px 10px;
-      border-radius: 20px;
-    }
-    @include get_down(576px){
-      margin: 20px 0px;
-    }
-
-    li{
-      list-style: none;
-      margin: 10px 0;
-      display: flex;
-    }
-    
-    &--name{
-      text-transform: uppercase;
-    }
-    .play_icon{
-      width: 15px;
-      margin-right: 2px;
-      fill: #505050;
-    }
-  }
-  .section_desc{
-    line-height: 25px;
-    color: var(--para-color);
-  }
-}
 
 .shown{display: block}
 .hidden{display: none}
@@ -339,30 +272,6 @@ ul, li{
   }
 }
 
-#post-content{
-  *{
-    white-space: pre-wrap !important;
-  }
-  code{
-    font-family: monospace,monospace !important ;
-  }
-  h1,h2,h3,h4,h5,h6{
-    color: var(--heading-color);
-  }
-  P {
-    white-space: pre-wrap !important;
-    color: var(--para-color);
-  }
-  li{
-    padding: 0;
-    margin: 0 0 0rem 1rem;
-    p{margin: 0;padding: 0}
-  }
-  img{
-    width: 100%;
-    display: flex;
-  }
-}
 .post_loadfail{
   padding: 10px;
   background: var(--sidebar-bg-color);
@@ -406,3 +315,5 @@ ul, li{
 }
  .block{display: block}
  .flex{display: flex}
+ .none{display: none}
+ .relative{position: relative}

@@ -1,22 +1,33 @@
 
+
+const isDev = process.env.NODE_ENV === "development"
+
+
 const esbuild = require('esbuild')
 // clients bundlers
 const {sassPlugin} = require('esbuild-sass-plugin')
 esbuild.build({
 	entryPoints: ["views/index.tsx"],
 	bundle: true,
-	minify: false,
-	sourcemap: true,
+	minify: !isDev,
+	sourcemap:  isDev,
 	// outdir: "out/static",
-	outdir: "dist/public/javascripts",
-	chunkNames: "chunks/[name]",
+	outdir: "dist/public/asserts",
+	// chunkNames: "chunks/[name]",
 	// chunkNames: "chunks/[name]-[hash]",
 	target: ['chrome90'],
 	format:"esm",
-	watch: true,
-	
+	watch: isDev ?  {
+		onRebuild(error, result) {
+			if (error) {
+				console.error('client watch build failed:', error)
+			} else {
+				console.log('client watch build succeeded:', result)
+			}
+		},
+	} : false,
 	incremental: false,
-	splitting: false,
+	splitting: true,
 	plugins: [sassPlugin()]
 })
 	.then(r=>{
