@@ -2,62 +2,10 @@
 import {NextFunction, Request, Response} from "express";
 import mongoose from "mongoose";
 import slugify from "../utils/slugify";
+import {RequestWithSession} from "../types";
 
-
-
-export const getHomePage = async (req: Request, res: Response, next:NextFunction)=> {
-  
-  let client;
-  
-  try {
-    
-    let catWithPost = {}
-    
-    const uri = process.env.MONGO_DB_URI
-    client = await mongoose.connect(uri)
-    
-  
-    const Post = mongoose.model("Post")
-    let posts: any = await Post.find({})
-    
-    const Category =  mongoose.model("Category")
-    let categories: any = await Category.find({})
-    categories && categories.forEach(category=>{
-      posts && posts.findIndex(post=>{
-        if(category.slug === post.category_slug){
-          if(catWithPost[category.slug]){
-            catWithPost[category.slug] = [
-              ...catWithPost[category.slug],
-              post
-            ]
-          } else {
-            catWithPost[category.slug] = [post]
-          }
-        }
-      })
-    })
-    
-    return res.render('index', {
-      title: 'Javascript-refresh',
-      posts: posts
-    });
-
-
-  } catch (ex){
-    console.log(ex)
-    return res.render('index', {
-      title: 'Javascript-refresh',
-      posts: null
-    });
-
-  } finally {
-    await client?.disconnect()
-  }
-}
 
 export const getCategories = async (req: Request, res: Response, next:NextFunction)=> {
-  
-  let client;
   
   try {
     const Category =  mongoose.model("Category")
@@ -73,18 +21,26 @@ export const getCategories = async (req: Request, res: Response, next:NextFuncti
 
 }
 
-export const getSidebarData = async (req: Request, res: Response, next:NextFunction)=> {
-
+export const getSidebarData = async (req: RequestWithSession, res: Response, next:NextFunction)=> {
+  
+  let isAdmin = false
+  if(req.session && req.session.role === "admin"){
+    isAdmin = true
+  }
   
   try {
     let catWithPost = {}
     
     const Post =  mongoose.model("Post")
-    let posts: any = await Post.find({}).select("-content")
-
+    let posts: any = []
+    if(isAdmin){
+      posts = await Post.find({}).select("-content")
+    } else {
+      posts = await Post.find({ is_public: true }).select("-content")
+    }
     const Category =  mongoose.model("Category")
     let categories: any = await Category.find({})
-
+    
     categories.forEach(category=>{
       posts.findIndex(post=>{
         if(category.slug === post.category_slug){
@@ -136,35 +92,11 @@ export const getPost = async (req: Request, res: Response, next:NextFunction)=> 
   }
 }
 
-export const getAddPostPage =  async (req: Request, res: Response, next:NextFunction)=>{
-  
-  try {
-    const Category = mongoose.model("Category")
-    let categories = await Category.find({})
 
-    return res.render('add-post', {
-      title: 'Add Post',
-      post: null,
-      isUpdated: false,
-      html: false,
-      categoryName: "Javascript Fundamental",
-      categories: categories
-    });
-  } catch (ex){
-  
-  } finally {
-  
-  }
-}
-export const getUpdatePostPage =  async (req: Request, res: Response, next:NextFunction)=>{
-  return res.render('add-post', {
-    title: 'Update Post'
-  });
-}
 
-export const addPostHandler =   async (req: Request, res: Response, next:NextFunction)=>{
+export const addPostHandler =   async (req: RequestWithSession, res: Response, next:NextFunction)=>{
   
-  const {title, summary, content, category_slug, slug} = req.body
+  const {title, summary, content,is_public, category_slug, slug} = req.body
   
   
   let Post = mongoose.model("Post")
@@ -173,19 +105,30 @@ export const addPostHandler =   async (req: Request, res: Response, next:NextFun
     summary,
     content,
     category_slug,
-    slug: slugify(title),
-    author_id: "6289f36aaf43d33293035508"
+    is_public,
+    slug,
+    author_id: req.session.user_id
   })
   
   try{
     let a: any = await newPost.validate();
     a = await newPost.save()
     if(a){
-      res.status(201).json(a)
+      res.status(201).json({
+        title,
+        summary,
+        content,
+        category_slug,
+        slug,
+        author_id: a.author_id,
+        _id: a._id
+      })
+    } else {
+      res.status(500).json({message : "post create fail"})
     }
     
   } catch (ex){
-    res.status(500).json({})
+    res.status(500).json({message: ex.message})
     console.log(ex.errors)
   }
 }
@@ -196,7 +139,7 @@ export const addCategoryHandler =   async (req: Request, res: Response, next:Nex
   let Category = mongoose.model("Category")
   let cat = await Category.findOne({slug:  slugify(categoryName)})
   if(cat) {
-    return res.status(409).json({message: "Category already exists"})
+    return res.status(409).json({message: categoryName + " already exists"})
   }
   
   let newCategory  = new Category({
@@ -221,7 +164,7 @@ export const addCategoryHandler =   async (req: Request, res: Response, next:Nex
   }
 }
 
-export const updatePost =   async (req: Request, res: Response, next:NextFunction)=>{
+export const updatePost =   async (req: RequestWithSession, res: Response, next:NextFunction)=>{
   
   const {_id} = req.body
 
@@ -236,14 +179,37 @@ export const updatePost =   async (req: Request, res: Response, next:NextFunctio
       }
     )
     if(isUpdated.modifiedCount > 0){
-      res.status(201).json({})
+      res.status(201).json({
+        ...req.body
+      })
     } else {
-      res.status(201).json({})
+      res.status(500).json({message: "post update fail"})
     }
     
   } catch (ex){
-    res.status(500).json({})
-   
+    res.status(500).json({message: ex.message})
+    
+  } finally {
+  
+  }
+}
+
+export const deletePost =   async (req: RequestWithSession, res: Response, next:NextFunction)=>{
+
+  const { post_id} = req.params
+
+  try {
+    
+    let Post = mongoose.model("Post")
+    let isDeleted  = await Post.deleteOne({_id: post_id})
+    if(isDeleted.deletedCount > 0){
+      res.status(201).json({message: "post deleted"})
+    } else {
+      res.status(500).json({message: "post delete fail"})
+    }
+    
+  } catch (ex){
+    res.status(500).json({message: ex.message})
     
   } finally {
   

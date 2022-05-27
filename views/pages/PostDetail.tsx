@@ -1,10 +1,9 @@
 import "./styles.scss"
 import React from "preact/compat";
-import {useEffect, useState} from "preact/hooks";
+import {useEffect, useRef, useState} from "preact/hooks";
 import api from "../apis";
 import connect from "../store/connect";
 import { marked } from 'marked';
-
 
 import "../scss/hljs.scss";
 import SweetAlert from "./SweetAlert";
@@ -17,6 +16,7 @@ function PostDetail(props) {
 
   const [message, setMessage] = React.useState("")
   
+  const textAreaRef = useRef()
   
   const [changeMdRow, setChangeMdRow] = React.useState("")
   
@@ -68,12 +68,20 @@ function PostDetail(props) {
   
   }, [])
   
-  React.useEffect(()=>{
-    let textarea = document.querySelector("#autoResizing") as HTMLTextAreaElement;
+  useEffect(()=>{
+    let textarea = textAreaRef.current as HTMLTextAreaElement
     if(textarea) {
       textarea.style.height = 'auto';
       textarea.style.height = textarea.scrollHeight + 'px';
     }
+    
+    if(mode === "edit"){
+      let textArea = textAreaRef.current as HTMLTextAreaElement
+      if(textArea) {
+        textArea.value = post.content
+      }
+    }
+    
   }, [mode])
   
   function makeContentEditable(){
@@ -86,12 +94,15 @@ function PostDetail(props) {
   }
   
   function saveOnDatabase(){
-    if( (!props.authState) || (!props.authState._id) ){
+    if(!props.authState){
       setMessage("Please login first")
       return
     }
+    
+    let textArea = textAreaRef.current as HTMLTextAreaElement
+    
     if(changeMdRow) {
-      api.post("/api/update-post", {content: changeMdRow, _id: post._id}).then(response => {
+      api.post("/api/update-post", {content: textArea.value, _id: post._id}).then(response => {
         if(response.status === 201){
           setMode("")
           const previewMD = document.getElementById("preview-md")
@@ -124,10 +135,10 @@ function PostDetail(props) {
   
   function changeContentInput(e) {
     let textarea = e.target
-    if(textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = textarea.scrollHeight + 'px';
-    }
+    // if(textarea) {
+    //   textarea.style.height = 'auto';
+    //   textarea.style.height = textarea.scrollHeight + 'px';
+    // }
     setChangeMdRow(e.target.value)
   }
   
@@ -162,11 +173,8 @@ function PostDetail(props) {
           ) }
           
           {mode === "edit" && (
-        
-     
-            <textarea value={changeMdRow} onChange={changeContentInput} id="autoResizing" className="content_edit_mode mdEditor"/>
+              <textarea ref={textAreaRef} onChange={changeContentInput} id="autoResizing" className="content_edit_mode mdEditor"/>
            )}
-  
            <div id="preview-md" class={[(mode !== "edit" ||  mode === "preview" ) ? "block": "none"].join(" ")}/>
           
         </div>

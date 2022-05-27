@@ -7,6 +7,7 @@ import api from "../apis";
 import InputGroup from "../components/InputGroup";
 import errorMessage from "../response/errorResponse";
 import SweetAlert from "./SweetAlert";
+import slugify from "../../src/utils/slugify";
 
 
 
@@ -24,7 +25,8 @@ const AddPost = (props)=>{
     title: "",
     slug: "",
     summary: "",
-    content: ""
+    content: "",
+    is_public: false
   })
   
   const [categoryName, setCategoryName] = React.useState("")
@@ -49,7 +51,6 @@ const AddPost = (props)=>{
     
       }())
     }
-    
   }, [])
   
   
@@ -83,10 +84,17 @@ const AddPost = (props)=>{
   
   
   function handleChange(e){
-    setPost({
-      ...post,
-      [e.target.name]: e.target.value
-    })
+    if(e.target.type === "checkbox"){
+      setPost({
+        ...post,
+        [e.target.name]: e.target.checked
+      })
+    } else {
+      setPost({
+        ...post,
+        [e.target.name]: e.target.value
+      })
+    }
   }
   
   
@@ -94,7 +102,7 @@ const AddPost = (props)=>{
     e.preventDefault();
     setMessage("")
   
-    if( (!props.authState) || (!props.authState._id) ){
+    if(!props.authState){
       setMessage("Please login first")
       return
     }
@@ -120,16 +128,14 @@ const AddPost = (props)=>{
     e.preventDefault();
     setMessage("")
     
-    if( (!props.authState) || (!props.authState._id) ){
+    if(!props.authState){
       setMessage("Please login first")
+      window.localStorage.setItem("state", JSON.stringify(post))
       return
     }
     
-    
-    
     if(props.path  === "/add-post"){
-  
-      const { __v, created_at, _id, author_id, slug, ...data} = post
+      const { __v, created_at, _id, is_public, author_id, slug, ...data} = post
       let inComplete = ""
       let isFilled = true
       for (let postKey in data) {
@@ -140,9 +146,19 @@ const AddPost = (props)=>{
       }
   
       if(isFilled){
-        api.post("/api/add-post", {...data, author_id: props.authState._id}).then(response => {
+        api.post("/api/add-post", {
+          ...data,
+          is_public: post.is_public,
+          slug: slugify(data.title),
+          author_id: props.authState._id
+        }).then(response => {
           if(response.status === 201){
             setMessage("post has been saved")
+            props.actions.dispatch({
+              type: ActionTypes.SET_POST,
+              payload: response.data
+            })
+            localStorage.removeItem("state")
           }
         }).catch(ex => {
           setMessage(errorMessage(ex))
@@ -152,9 +168,8 @@ const AddPost = (props)=>{
       }
       
     } else {
-      
       if(post){
-        const { __v, created_at, ...data} = post
+        const { __v, created_at, is_public, ...data} = post
         let inComplete = ""
         let isFilled = true
         for (let postKey in data) {
@@ -165,9 +180,18 @@ const AddPost = (props)=>{
         }
         
         if(isFilled){
-          api.post("/api/update-post", {...data}).then(response => {
+          api.post("/api/update-post", {
+            ...data,
+            is_public: post.is_public,
+            slug: slugify(data.title)
+          }).then(response => {
             if(response.status === 201){
-              alert("post updated" )
+              setMessage("post has been updated")
+              props.actions.dispatch({
+                type: ActionTypes.SET_UPDATE_POST,
+                payload: response.data
+              })
+              localStorage.removeItem("state")
             }
           }).catch(ex => {
             setMessage(errorMessage(ex))
@@ -176,6 +200,18 @@ const AddPost = (props)=>{
           setMessage("Please provide " + inComplete )
         }
       }
+    }
+  }
+  
+  function handleRestoreFields(){
+    let localState = localStorage.getItem("state")
+    if(localState){
+      try{
+        let s = JSON.parse(localState)
+        setPost({...post, ...s})
+      } catch (ex){}
+    } else {
+      setMessage("No found save post fields")
     }
   }
   
@@ -188,8 +224,10 @@ const AddPost = (props)=>{
 
       <form onSubmit={savePost}  className="add-post-form">
         
-        <h1> { props.path  === "/add-post" ? "Add Post" : "Update Post"}</h1>
-    
+        <div className="flex justify-between align-center">
+          <h1> { props.path  === "/add-post" ? "Add Post" : "Update Post"}</h1>
+          <button type="button" onClick={handleRestoreFields} className="btn btn-primary">Restore Fields</button>
+        </div>
         
         <InputGroup
           label="Post Title"
@@ -222,6 +260,11 @@ const AddPost = (props)=>{
           <div className="input-group">
             <label>Post Summary</label>
             <textarea onChange={handleChange} value={post.summary} name="summary"  placeholder="Content">{post.summary}</textarea>
+          </div>
+        
+          <div className="input-group checkbox-group">
+            <input onChange={handleChange} id="isPublic" type="checkbox" name="is_public" checked={post.isPublic} />
+            <label htmlFor="isPublic">is public</label>
           </div>
         
         <div className="input-group">

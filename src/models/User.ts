@@ -1,5 +1,8 @@
 import mongoose, {Mongoose, Schema, Types} from 'mongoose';
 
+import  bcrypt  from 'bcryptjs';
+
+
 
 
 const userSchema = new Schema({
@@ -9,6 +12,7 @@ const userSchema = new Schema({
   },
   email: {
     type: String,
+    index: true,
     // validate: {
     //   validator: async function(v) {
     //   }
@@ -20,7 +24,7 @@ const userSchema = new Schema({
     enum: ['admin', 'user'],
     message: '{VALUE} is not supported'
   },
-  password: { type: String, index: true },
+  password: { type: String },
   created_at: { type: Date, default: Date.now },
   avatar: String
 });
@@ -46,5 +50,12 @@ userSchema.path('email').validate(async function(value) {
   }
 });
 
+userSchema.pre('save', function(next) {
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(this.password, salt);
+  this.password = hash
+  next()
+});
 
 mongoose.model("User", userSchema)
+

@@ -52,16 +52,29 @@ html[data-theme="dark"] {
   margin: 30px auto;
   display: block;
   width: 100%;
-  
+  max-width: 600px;
+  margin: auto;
   .input-group {
     display: flex;
     margin: 20px 0;
+    
+    &.checkbox-group{
+      input{
+        width: max-content;
+      }
+      label {
+        margin-left: 100px;
+        &:hover{
+          color: var(--link-color);
+          cursor: pointer;
+        }
+      }
+    }
     
     @include get_down(576px){
       display: flex;
       flex-direction: column;
     }
-   
     
     label {
       max-width: 120px;
@@ -89,6 +102,7 @@ html[data-theme="dark"] {
       max-width: 100%;
     }
   }
+  
 }
 
 

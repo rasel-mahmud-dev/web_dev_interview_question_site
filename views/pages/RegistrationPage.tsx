@@ -1,23 +1,24 @@
 
 import "./styles.scss"
 import api from "../apis";
-import store from "../store";
-import { route } from 'preact-router';
+
+import {Link, route} from 'preact-router';
 import React from "preact/compat";
-import {useEffect, useState} from "preact/hooks";
+import {useState} from "preact/hooks";
 import connect from "../store/connect";
-import { Link } from "preact-router";
 import InputGroup from "../components/InputGroup";
 import {ActionTypes} from "../store/types";
 import SweetAlert from "./SweetAlert";
 import errorMessage from "../response/errorResponse";
 
 
-const Login = (props)=>{
+const RegistrationPage = (props)=>{
   const [message, setMessage] = React.useState("")
   const [userData, setUser]  = useState({
-    email :"rasel.mahmud.dev@gmail.com",
-    password: "123"
+    username: "",
+    email :"",
+    password: ""
+    
   })
   
   
@@ -26,11 +27,11 @@ const Login = (props)=>{
   }
   
   
-  function handleLogin(e){
+  function handleRegister(e){
     e.preventDefault();
-    setMessage("Please login first")
+    setMessage("")
     if(userData.email && userData.password){
-        api.post("/api/login", {
+        api.post("/api/registration", {
           ...userData
         }).then(res=>{
           if(res.status === 201){
@@ -55,21 +56,29 @@ const Login = (props)=>{
   
   return (
     <div>
+
       
-      <form onSubmit={handleLogin} className="add-post-form">
+      <form onSubmit={handleRegister} className="add-post-form">
   
-        <h1>Login Page</h1>
+        <h1>Create a Account</h1>
   
         <SweetAlert onClose={()=>setMessage("")} message={message} />
         
+        <InputGroup label="Username" value={userData.username} name="username" onChange={handleChange} />
         <InputGroup label="Email" value={userData.email} name="email" onChange={handleChange} />
-        <InputGroup label="Password" value={userData.password} type="password" name="password" onChange={handleChange} />
-        <h4 className="label"><span>Not a account ? <Link href="/registration">Create a account</Link> </span></h4>
-        <button type="submit" className="btn btn-primary">Login</button>
+        <InputGroup
+          label="Password"
+          value={userData.password}
+          type="password"
+          name="password"
+          onChange={handleChange}
+        />
+        <h4 className="label"><span>Already have an account ? <Link href="/login">Login page</Link> </span></h4>
+        <button type="submit" className="btn btn-primary">Register</button>
       </form>
     </div>
   )
 }
 
 
-export default connect(Login)
+export default connect(RegistrationPage)

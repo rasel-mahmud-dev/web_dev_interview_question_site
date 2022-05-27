@@ -31,8 +31,10 @@ app.use(cookieSession({
 
 
 
+// import mainApp from "../dist"
+
+// for local server
 import mainApp from "../dist"
-// import mainApp from "../src"
 
 
 const router = express.Router();
@@ -48,6 +50,22 @@ mainApp(app, router)
 
 app.use(bodyParser.json());
 app.use('/.netlify/functions/server', router);  // path must route to lambda
+
+
+if(process.env.NODE_ENV === "development") {
+  const liveReload = require("livereload");
+  const connectLiveReload = require("connect-livereload");
+  
+  const liveReloadServer = liveReload.createServer()
+  liveReloadServer.watch(path.join(__dirname, 'views'));
+  
+  liveReloadServer.server.once("connection", () => {
+    setTimeout(() => {
+      liveReloadServer.refresh("/")
+    }, 5)
+  })
+  app.use(connectLiveReload())
+}
 
 app.get("*", (req, res, next) => {
   res.setHeader("Content-Type", "text/html")
@@ -66,9 +84,7 @@ app.get("*", (req, res, next) => {
 				<body>
 					<div id="root"></div>
 					 <script type="module" src="/.netlify/functions/server/static/asserts/index.js"></script>
-					 <script id="__bs_script__">//<![CDATA[
-    				document.write("<script async src='http://HOST:3000/browser-sync/browser-sync-client.js?v=2.27.10'><\\/script>".replace("HOST", location.hostname));
-						//]]></script>
+					 <script src="//localhost:35729/livereload.js?snipver=1"  defer=""></script>
 				</body>
 			</html>
   `)

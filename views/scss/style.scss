@@ -65,195 +65,7 @@ ul, li{
   top: -400!important;
 }
 
-.header{
-  border-bottom: 1px solid rgb(159 159 159 / 24%);
-  background: var(--primary-color);
-  min-height: 64px;
-  @include get_down(576px){
-    min-height: 50px;
-    
-  }
-}
-.main-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--white);
-  
-  .logo {
-    svg {
-      width: 130px;
-    }
-    padding: 10px 0px;
-    position: relative;
-    z-index: 1;
-    @include get_down(500px) {
-      width: 120px;
-      padding: 5px 0px;
-    }
-    
-    img {
-      width: 100%;
-    }
-  }
-  
-  .menu {
-    display: flex;
-    list-style: none;
-    align-items: center;
-    
-    &_nav {
-      display: flex;
-      align-items: center;
-      
-      @include get_down(768px){
-        position: absolute;
-        left: 0;
-        background: #2e2e2e;
-        width: 100%;
-        top: 0;
-        flex-direction: column;
-        padding: 0 0;
-        display: flex !important;
-        overflow: hidden;
-        height: 0;
-        transition: height .4s ease, padding .4s ease;
-      }
-      
-      // show on mobile nav
-      &.mobile_nav_expand{
-        //top: 0px;
-        //height: 400px;
-        padding: 20px 0;
-        @include get_down(768px){
-          li{
-            margin: 8px 0px;
-          }
-        }
-      }
-      &.mobile_nav_collapse{
-        padding: 0;
-        height: 0;
-        @include get_down(768px) {
-          li {
-            margin: 8px 0px;
-          }
-        }
-      }
-      
-      .active {
-        border-bottom: 2px solid #46cbff;
-        
-        a {
-          color: #ffeb00;
-          font-weight: 800;
-        }
-      }
-      
-      li, .sub_menu_item {
-        position: relative;
-        color: var(--white);
-        text-transform: uppercase;
-        list-style: none;
-        padding: 4px 5px;
-        font-size: 14px;
-        font-weight: 500;
-        margin: 0 5px;
-        
-        &:hover {
-          color: var(--secondary-color);
-        }
-        
-        a, span {
-          color: var(--white);
-          text-decoration: none;
-          cursor: pointer;
-          
-          &:hover {
-            color: var(--secondary-color);
-          }
-        }
-        
-        .angle-down-icon {
-          width: 10px;
-          margin-left: 5px;
-          fill: var(--white);
-        }
-      }
-      
-      .sub_menu {
-        position: absolute;
-        width: 250px;
-        padding: 8px 10px;
-        background: white;
-        top: 35px;
-        z-index: 100;
-        left: 50%;
-        transform: translateX(-50%) scaleY(0);
-        box-shadow: 0px 4px 6px -2px #46464678;
-        
-        .active {
-          a {
-            color: var(--primary-color);
-          }
-        }
-        
-        a {
-          color: #282828;
-        }
-        
-        transition: all .2s ease;
-        transform-origin: top;
-        
-        &.open_submenu {
-          transform: translateX(-50%) scaleY(1);
-        }
-        
-        &.hide_submenu {
-          transform: translateX(-50%) scaleY(0);
-        }
-        
-      }
-      
-      @include get_down(768px) {
-        display: none;
-      }
-      
-    }
-    
-    .menu_icon {
-      margin-left: 10px;
-      display: flex;
-      align-items: center;
-      .switch-theme {
-        color: var(--white);
-        cursor: pointer;
-        
-        .dark-mode-icon {
-          width: 22px;
-          fill: var(--white);
-        }
-        
-        .light-mode-icon {
-          width: 22px;
-          fill: var(--white);
-        }
-      }
-      
-      .menu-bars-icon {
-        width: 20px;
-        display: none;
-        fill: var(--white);
-        margin-left: 10px;
-        @include get_down(768px) {
-          display: block;
-          position: relative;
-        }
-      }
-      
-    }
-  }
-}
+
 
 .breadcrumb{
   padding-top: 10px;
@@ -296,6 +108,7 @@ ul, li{
   font-size: 14px;
   background: #dddddd;
   color: black;
+  cursor: pointer;
   border-radius: 4px;
   transition:  box-shadow .3s ease, transform .3s ease;
   &:hover{
@@ -317,3 +130,5 @@ ul, li{
  .flex{display: flex}
  .none{display: none}
  .relative{position: relative}
+ .fixed{position: relative}
+ .absolute{position: absolute}

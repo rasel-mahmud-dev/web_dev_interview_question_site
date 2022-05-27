@@ -1,6 +1,6 @@
 const esbuild = require('esbuild')
 
-const isDev = process.env.NODE_ENV !== "development"
+const isDev = process.env.NODE_ENV === "development"
 
 // server bundler
 esbuild.build({

@@ -1,12 +1,22 @@
 
 import "./navigation.scss"
-import React from "preact/compat";
+import React, {useState} from "preact/compat";
 import { Link } from "preact-router";
 import connect from "../store/connect";
 import {ActionTypes} from "../store/types";
 import api from "../apis";
 
 const Navigation = (props)=>{
+	
+	const [openMenu, setOpenMenu] =
+		useState(false)
+	
+	function getCallbackUrl(){
+		let hash = window.location.hash
+		if(hash !== "#/login"){
+			return hash.replace("#/", "")
+		}
+	}
 	
 	const {authState, appState} = props
 	
@@ -42,6 +52,26 @@ const Navigation = (props)=>{
 		})
 	}
 	
+
+	
+	
+	function authPanel(isOpen){
+		return (
+			<div className={["panel", isOpen ? "panel-show" : ""].join(" ")}>
+				{ authState ? (
+					<>
+						<li onClick={handleLogout} className="panel__item">Logout</li>
+					</>
+				) : (
+					<>
+						<li className="panel__item"><Link href="/login">Login</Link></li>
+						<li className="panel__item"><Link href="/registration">Registration</Link></li>
+					</>
+				) }
+			</div>
+		)
+	}
+	
 	
 	return (
 		<div className="navigation">
@@ -67,21 +97,48 @@ const Navigation = (props)=>{
 								}
 							</li>
 							
-							<li className="">
+							<li onMouseLeave={()=>setOpenMenu(false)} onMouseEnter={()=>setOpenMenu(true)} className="relative">
 								{ authState ? (
-									<img onClick={handleLogout} className="avatar" src={authState?.avatar} alt="" />
+									authState.avatar
+										? <img onClick={handleLogout} className="avatar" src={authState.avatar} alt="" />
+										: <AlphabeticAvatar username={authState.username}/>
 								) : (
-									<Link className="block"  href="/login">
+									<Link className="block"  href={`/login?callback=${getCallbackUrl()}`}>
 										<svg className="icon block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M416 32h-64c-17.67 0-32 14.33-32 32s14.33 32 32 32h64c17.67 0 32 14.33 32 32v256c0 17.67-14.33 32-32 32h-64c-17.67 0-32 14.33-32 32s14.33 32 32 32h64c53.02 0 96-42.98 96-96V128C512 74.98 469 32 416 32zM342.6 233.4l-128-128c-12.51-12.51-32.76-12.49-45.25 0c-12.5 12.5-12.5 32.75 0 45.25L242.8 224H32C14.31 224 0 238.3 0 256s14.31 32 32 32h210.8l-73.38 73.38c-12.5 12.5-12.5 32.75 0 45.25s32.75 12.5 45.25 0l128-128C355.1 266.1 355.1 245.9 342.6 233.4z"/></svg>
 									</Link>
 								)
 								 }
+								 
+								{authPanel(openMenu)}
+								
 							</li>
 						</div>
 					</div>
 			</div>
 		</div>
 	)
+}
+
+function AlphabeticAvatar({username}){
+	let letters = [
+		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+	]
+	let colors = [
+		"#ff9951", "#d6b7ff", "#FF0000", "#a464ff",
+		"#52ff3f", "#e7f867", "#30d2ff", "#a7ffaa",
+		"#481fff", "#ffabab", "#b677ff", "#FF0000",
+		"#ff52ab", "#FF0000", "#29ffa3", "#ff8d6c",
+		"#c745ff", "#6e87d2", "#8afdce", "#ff46ed",
+		"#ffae4c", "#4606b8", "#ffc27e", "#FF0000",
+		"#46a2ff", "#80fff3",
+	]
+	let l = username[0]
+	let a = letters.indexOf(l)
+	
+	return (
+		<div className="avatar-letter" style={{background: colors[a]}}>{l}</div>
+	)
+	
 }
 
 export default connect(Navigation)

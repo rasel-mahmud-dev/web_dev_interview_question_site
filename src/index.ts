@@ -1,23 +1,10 @@
 import mongoose from "mongoose";
 
-// const express = require('express');
-// const serverless = require('serverless-http');const app = express();
-// const bodyParser = require('body-parser');
-// const path = require('path');
-// const cookieParser = require('cookie-parser');
-// const logger = require('morgan');
-// // var session = require('express-session')
-// var cookieSession = require('cookie-session')
-
-
 require("dotenv").config()
 
-// for host
-// import routes from "../dist/routes"
 
-//dev
+//local dev
 import routes from "../src/routes"
-
 require("../src/models")
 
 export default  function (app, router){
@@ -38,15 +25,6 @@ export default  function (app, router){
 //   app.get("/", (r, res)=>{
 //     res.send("ap")
 // })
-  
-  
-  if(process.env.NODE_ENV === "development"){
-    // require("../src/models")
-  } else {
-    // require("../src/models")
-    // require("../models")
-    // require("./dist")
-  }
   
   routes(router)
   // routes(app)

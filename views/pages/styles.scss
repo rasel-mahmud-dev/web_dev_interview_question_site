@@ -7,7 +7,7 @@
 pre{
   white-space: pre-line;
 }
-
+.mt-10{margin-top: 10px}
 .action_icons__root {
   display: flex;
   justify-content: end;
@@ -65,7 +65,7 @@ pre{
     white-space: pre-wrap !important;
   }
   
-  ul, li {
+  ul, li, ol {
     margin: 0;
     padding: 0;
     margin-block-start: 0;
@@ -75,10 +75,6 @@ pre{
     padding-inline-start: 0
   }
   
-  ul {
-    line-height: 14px;
-    margin-left: 15px;
-  }
   
   
   code{
@@ -106,8 +102,13 @@ pre{
 
 .category_name{
   margin: 0;
-  padding: 0;
-  margin-top: 15px;
+  padding: 10px;
+}
+.each-cat{
+  border: 1px solid #d0d0ff;
+  margin: 10px 0px;
+  padding: 10px;
+  border-radius: 10px;
 }
 .post{
   display: flex;
@@ -118,5 +119,19 @@ pre{
   padding: 5px 10px;
   &:hover{
     background: var(--primary-color);
+    .action{
+      display: flex;
+    }
   }
+  .action{
+    display: none;
+  }
+}
+.label{
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.grid{
+
 }

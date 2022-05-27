@@ -1,19 +1,6 @@
 import mongoose, {Mongoose, Schema, Types} from 'mongoose';
 
 
-export interface PostType{
-  post_id: string
-  title: string
-  category_id: number
-  category_name?: string
-  slug: string
-  cover?: string
-  path?: string
-  author_id: number
-  tags: string
-  created_at: string
-}
-
 const postSchema = new Schema({
   title: {
     type: String, // String is shorthand for {type: String}
@@ -31,7 +18,7 @@ const postSchema = new Schema({
     required: [true, 'Content required'],
   },
   created_at: { type: Date, default: Date.now },
-  isPublic: Boolean
+  is_public: Boolean
 });
 
 

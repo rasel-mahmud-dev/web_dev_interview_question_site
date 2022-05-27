@@ -3,10 +3,12 @@ export enum ActionTypes {
   FETCH_SIDEBAR_DATA= "FETCH_SIDEBAR_DATA",
   FETCH_POST = "FETCH_POST",
   FETCH_CATEGORIES = "FETCH_CATEGORIES",
-  ADD_POST = "ADD_POST",
   LOGIN = "LOGIN",
   LOGOUT = "LOGOUT",
   TOGGLE_THEME = "TOGGLE_THEME",
+  SET_UPDATE_POST = "SET_UPDATE_POST",
+  SET_POST = "SET_POST",
+  DELETE_POST = "DELETE_POST",
 }
 
 export interface Post {
@@ -16,7 +18,8 @@ export interface Post {
   slug: string,
   summary: string,
   category_slug: string,
-  content: string
+  content: string,
+  is_public: boolean
 }
 
 export interface User {

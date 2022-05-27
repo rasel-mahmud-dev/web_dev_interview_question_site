@@ -25,6 +25,23 @@ export function postReducer(state, action){
       }
       return state;
       
+    case ActionTypes.SET_UPDATE_POST :
+      state = {
+        ...state,
+        categories: action.payload
+      }
+      return state;
+      
+    case ActionTypes.DELETE_POST :
+      let updateSidebarDataCategories = {...state.sidebarData}
+      let posts = updateSidebarDataCategories[action.payload.category_slug]
+    
+      if(posts){
+        posts = posts.filter(post=>post._id !== action.payload.post_id)
+      }
+      state.sidebarData = posts
+      return state;
+      
     default:
       return  state
   }

@@ -11,7 +11,7 @@
     "client:build": "node config/client.build.js",
     "server:build": "node config/server.build.js",
     "ts-dev": "set NODE_ENV=development&set NODE_SCOPE=local&nodemon src/local-server.ts",
-    "dev": "set NODE_ENV=development&set NODE_SCOPE=local&npm-run-all -p browser:sync  client:dev ts-dev",
+    "dev": "set NODE_ENV=development&set NODE_SCOPE=local&npm-run-all -p client:dev ts-dev",
     "browser:sync": "browser-sync start --config bs-config.js",
     "dev3": "etsc"
   },
@@ -21,6 +21,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@fortawesome/react-fontawesome": "^0.1.18",
     "axios": "^0.27.2",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
     "cookie-session": "^2.0.0",
@@ -41,6 +42,8 @@
     "preact-router": "^4.0.1",
     "react": "^18.1.0",
     "react-router-dom": "^6.3.0",
+    "react-textarea-autosize": "^8.3.4",
+    "react-transition-group": "^4.4.2",
     "serverless-http": "^3.0.1",
     "ts-node": "^10.8.0",
     "wouter": "^2.8.0-alpha.2"
