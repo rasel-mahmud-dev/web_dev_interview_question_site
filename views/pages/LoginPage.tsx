@@ -27,7 +27,7 @@ const Login = (props)=>{
   
   function handleLogin(e){
     e.preventDefault();
-    setMessage("Please login first")
+    setMessage("")
     if(userData.email && userData.password){
         api.post("/api/login", {
           ...userData
