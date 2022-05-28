@@ -33,6 +33,7 @@ export const getSidebarData = async (req: RequestWithSession, res: Response, nex
     
     const Post =  mongoose.model("Post")
     let posts: any = []
+    console.log("sdf")
     if(isAdmin){
       posts = await Post.find({}).select("-content")
     } else {
@@ -62,7 +63,7 @@ export const getSidebarData = async (req: RequestWithSession, res: Response, nex
     });
 
   } catch (ex){
-    return res.status(500).json( {
+    res.status(500).json( {
       sidebarData: null
     });
 

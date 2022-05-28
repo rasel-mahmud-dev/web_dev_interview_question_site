@@ -29,8 +29,18 @@ const HomePage = (props)=>{
 			
 			 (async function () {
 				 try {
+				 	let sidebar_dataStr = localStorage.getItem("sidebar_data")
+					 let sidebar_data = JSON.parse(sidebar_dataStr)
+					 if(sidebar_data){
+						 props.actions.dispatch({
+							 type: ActionTypes.FETCH_SIDEBAR_DATA,
+							 payload: sidebar_data
+						 })
+						 return
+					 }
 					 let response = await api.post("/api/sidebar_data")
 					 if (response.status === 200) {
+					 	localStorage.setItem("sidebar_data", JSON.stringify(response.data.sidebarData))
 						 props.actions.dispatch({
 							 type: ActionTypes.FETCH_SIDEBAR_DATA,
 							 payload: response.data.sidebarData

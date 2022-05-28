@@ -47,6 +47,7 @@ html[data-theme="dark"] {
 .flex{display: flex}
 
 
+
 .add-post-form{
   backdrop-filter: blur(303px);
   margin: 30px auto;
@@ -104,7 +105,7 @@ html[data-theme="dark"] {
   }
   
 }
-
+.max-w-full{max-width: 100%}
 
 .alert{
   position: fixed;

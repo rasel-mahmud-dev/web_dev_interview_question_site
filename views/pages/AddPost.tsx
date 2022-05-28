@@ -1,7 +1,7 @@
 import "./styles.scss"
 import * as React from "preact/compat";
 import connect from "../store/connect";
-import {useEffect, useState} from "preact/hooks";
+import {useEffect, useRef, useState} from "preact/hooks";
 import {ActionTypes, Post} from "../store/types";
 import api from "../apis";
 import InputGroup from "../components/InputGroup";
@@ -31,12 +31,14 @@ const AddPost = (props)=>{
   
   const [categoryName, setCategoryName] = React.useState("")
   
+  const mdEditor = useRef()
+  
   useEffect(()=>{
-   
+    
+    
     if(!props.slug) {
-      
       (async function () {
-      
+        
         try {
           let response = await api.get("/api/categories")
           if (response.status === 200) {
@@ -69,7 +71,9 @@ const AddPost = (props)=>{
                 payload: response2.data
               })
             }
-        
+            if(mdEditor.current) {
+              mdEditor.current.innerText = response.data.content
+            }
             setPost({...response.data})
           }
       
@@ -90,10 +94,17 @@ const AddPost = (props)=>{
         [e.target.name]: e.target.checked
       })
     } else {
-      setPost({
-        ...post,
-        [e.target.name]: e.target.value
-      })
+      if(e.target.contentEditable){
+        setPost({
+          ...post,
+          content: e.target.outerText
+        })
+      } else {
+        setPost({
+          ...post,
+          [e.target.name]: e.target.value
+        })
+      }
     }
   }
   
@@ -124,6 +135,8 @@ const AddPost = (props)=>{
     })
   }
   
+  
+  
   function savePost(e){
     e.preventDefault();
     setMessage("")
@@ -132,6 +145,13 @@ const AddPost = (props)=>{
       setMessage("Please login first")
       window.localStorage.setItem("state", JSON.stringify(post))
       return
+    }
+  
+    let posts = null
+    try {
+      posts = JSON.parse(localStorage.getItem("posts"))
+    } catch (ex){
+    
     }
     
     if(props.path  === "/add-post"){
@@ -158,6 +178,14 @@ const AddPost = (props)=>{
               type: ActionTypes.SET_POST,
               payload: response.data
             })
+            
+            if(posts){
+              posts.push(response.data)
+            } else {
+              posts = [response.data]
+            }
+            localStorage.setItem("posts", JSON.stringify(posts))
+            
             localStorage.removeItem("state")
           }
         }).catch(ex => {
@@ -192,6 +220,22 @@ const AddPost = (props)=>{
                 payload: response.data
               })
               localStorage.removeItem("state")
+             
+              /// already exists posts on localstorage
+              if(posts){
+                let updatedPostIndex = posts.findIndex(post=>post.slug === response.data.slug)
+                if(updatedPostIndex !== -1){
+                  posts[updatedPostIndex] =  {
+                    ...posts[updatedPostIndex],
+                    ...response.data,
+                  }
+                } else {
+                  posts.push(response.data)
+                }
+              } else {
+                posts = [response.data]
+              }
+              localStorage.setItem("posts", JSON.stringify(posts))
             }
           }).catch(ex => {
             setMessage(errorMessage(ex))
@@ -222,7 +266,7 @@ const AddPost = (props)=>{
       <SweetAlert onClose={()=>setMessage("")} message={message} />
       
 
-      <form onSubmit={savePost}  className="add-post-form">
+      <form onSubmit={savePost}  className="add-post-form max-w-full">
         
         <div className="flex justify-between align-center">
           <h1> { props.path  === "/add-post" ? "Add Post" : "Update Post"}</h1>
@@ -269,7 +313,17 @@ const AddPost = (props)=>{
         
         <div className="input-group">
             <label>Post Content</label>
-            <textarea onChange={handleChange} value={post.content} name="content"  placeholder="Content"> {post.content} </textarea>
+            <div
+              ref={mdEditor}
+              onInput={handleChange}
+              contentEditable={true}
+              name="content"
+              id="autoResizing"
+              className="content_edit_mode mdEditor"
+            >
+
+              {post.content}
+            </div>
           </div>
         
           <div className="input-group">

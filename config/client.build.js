@@ -31,7 +31,7 @@ esbuild.build({
 	plugins: [sassPlugin()]
 })
 	.then(r=>{
-		console.log("client js are watching...")
+		console.log("client building...")
 	})
 	.catch(ex=>{
 		process.exit(1)

@@ -10,21 +10,26 @@
 <body>
 
 
-<textarea id="autoresizing">
+<div contenteditable="true" id="autoresizing">
         Try cutting, pasting
         or typing here
-    </textarea>
+    </div>
 
 
 <script >
   
-  textarea = document.querySelector("#autoresizing");
-  textarea.addEventListener('input', autoResize, false);
+  let textarea = document.querySelector("#autoresizing")
+
+  textarea.addEventListener("input", (e)=>{
+    console.log(textarea.outerText)
+  })
   
-  function autoResize() {
-    this.style.height = 'auto';
-    this.style.height = this.scrollHeight + 'px';
-  }
+  // textarea.addEventListener('input', autoResize, false);
+  //
+  // function autoResize() {
+  //   this.style.height = 'auto';
+  //   this.style.height = this.scrollHeight + 'px';
+  // }
   
 </script>
 

@@ -22,30 +22,72 @@ function PostDetail(props) {
   
   const [mode, setMode] = useState<"edit" | "preview" | "">("")
 
+  
+  function fetchPost(category_slug, slug){
+    return new Promise( ( async (resolve, reject) => {
+      try {
+        let response = await api.post("/api/post", {
+          category_slug: category_slug,
+          slug: slug,
+        })
+        if (response.status === 200) {
+          let html = marked.parse(response.data.content)
+          let post = response.data
+          props.actions.dispatch({
+            type: "FETCH_POST",
+            payload: post
+          })
+          let md = document.getElementById("preview-md")
+          md.innerHTML = `<pre>${html}</pre>`
+          setChangeMdRow(post.content)
+          resolve(post)
+        }
+      } catch (ex){
+        resolve(false)
+      }
+    }))
+  }
+  
+  
   useEffect(()=>{
   
     async function load(){
       try {
-        let response = await api.post("/api/post", {
-          category_slug: props.category_slug,
-          slug: props.slug,
-        })
-        if(response.status === 200){
-          let html = marked.parse(response.data.content)
-          props.actions.dispatch({
-            type: "FETCH_POST",
-            payload: response.data
-          })
-          let md = document.getElementById("preview-md")
-          md.innerHTML =  `<pre>${html}</pre>`
-          
+        let posts = null
+        try{
+          posts = JSON.parse(localStorage.getItem("posts"))
+        } catch (ex){
+          console.log(ex)
+        }
+        if(posts){
+          let index = posts.findIndex(post=>post.slug ===  props.slug)
+          if(index !== -1) {
+            //  post exist inside localStorage posts array
+            
+            let post = posts[index]
+            let html = marked.parse(post.content)
+            props.actions.dispatch({
+              type: "FETCH_POST",
+              payload: post
+            })
+            let md = document.getElementById("preview-md")
+            md.innerHTML = `<pre>${html}</pre>`
+            setChangeMdRow(post.content)
+          } else{
+            //  post not exist inside localStorage posts array
+            let post = await fetchPost(props.category_slug, props.slug)
+            posts.push(post)
+            localStorage.setItem("posts", JSON.stringify(posts))
+          }
+        } else {
+          let post = await fetchPost(props.category_slug, props.slug)
+          localStorage.setItem("posts", JSON.stringify([post]) )
         }
       } catch (ex){
-        console.log(ex)
+        setMessage(errorMessage(ex))
       }
     }
     load()
-  
   
     marked.setOptions({
       renderer: new marked.Renderer(),
@@ -63,22 +105,15 @@ function PostDetail(props) {
       smartypants: false,
       xhtml: false
     })
-  
-  
+    
   
   }, [])
   
   useEffect(()=>{
-    let textarea = textAreaRef.current as HTMLTextAreaElement
-    if(textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = textarea.scrollHeight + 'px';
-    }
-    
     if(mode === "edit"){
       let textArea = textAreaRef.current as HTMLTextAreaElement
       if(textArea) {
-        textArea.value = post.content
+        textArea.innerText = changeMdRow
       }
     }
     
@@ -99,16 +134,42 @@ function PostDetail(props) {
       return
     }
     
-    let textArea = textAreaRef.current as HTMLTextAreaElement
-    
     if(changeMdRow) {
-      api.post("/api/update-post", {content: textArea.value, _id: post._id}).then(response => {
+      api.post("/api/update-post", {content: changeMdRow, _id: post._id}).then(response => {
         if(response.status === 201){
           setMode("")
           const previewMD = document.getElementById("preview-md")
           previewMD.innerHTML = `
             <pre>${marked.parse(changeMdRow)}</pre>
           `
+  
+          let posts = null
+          try {
+            posts = JSON.parse(localStorage.getItem("posts"))
+          } catch (ex) {
+          }
+  
+          if(posts){
+            let updatedPostIndex = posts.findIndex(post=>post._id ===  post._id)
+            if(updatedPostIndex !== -1){
+              posts[updatedPostIndex] =  {
+                ...posts[updatedPostIndex],
+                content: changeMdRow,
+              }
+            } else {
+              posts.push({
+                ...post,
+                content: changeMdRow
+              })
+            }
+          } else {
+            posts = [{
+              ...post,
+              content: changeMdRow
+            }]
+          }
+          localStorage.setItem("posts", JSON.stringify(posts))
+          
         }
       }).catch(ex => {
         setMessage(errorMessage(ex))
@@ -124,6 +185,9 @@ function PostDetail(props) {
     
     if(mode === "preview") {
       setMode("edit")
+      if(textAreaRef.current){
+        textAreaRef.current.innerText = changeMdRow
+      }
       
     } else {
       setMode("preview")
@@ -134,12 +198,7 @@ function PostDetail(props) {
   }
   
   function changeContentInput(e) {
-    let textarea = e.target
-    // if(textarea) {
-    //   textarea.style.height = 'auto';
-    //   textarea.style.height = textarea.scrollHeight + 'px';
-    // }
-    setChangeMdRow(e.target.value)
+    setChangeMdRow(e.target.outerText)
   }
   
 
@@ -172,9 +231,14 @@ function PostDetail(props) {
             </div>
           ) }
           
-          {mode === "edit" && (
-              <textarea ref={textAreaRef} onChange={changeContentInput} id="autoResizing" className="content_edit_mode mdEditor"/>
-           )}
+          <div
+            ref={textAreaRef}
+            contentEditable={true}
+            onInput={changeContentInput}
+            id="autoResizing"
+            className={["content_edit_mode mdEditor", mode === "edit" ? "block": "none"].join(' ')}
+          />
+         
            <div id="preview-md" class={[(mode !== "edit" ||  mode === "preview" ) ? "block": "none"].join(" ")}/>
           
         </div>

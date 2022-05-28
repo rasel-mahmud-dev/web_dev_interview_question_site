@@ -51,10 +51,11 @@ pre{
   color: var(--heading-color);
   font-family: Rubik, serif;
   font-weight: 400;
-  
+  min-height: 300px;
   &::-webkit-resizer {
-    width: 100px;
-    height: 100px;
+    //width: 200px;
+    //height: 300px;
+    //background: red;
 
   }
   
