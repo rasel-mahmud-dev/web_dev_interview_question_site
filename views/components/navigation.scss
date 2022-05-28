@@ -73,14 +73,15 @@ html{
   background: white;
   box-shadow: 0 2px 15px -5px #373737;
   padding: 8px 15px;
-  transform: translateY(20px);
-  
+  transform: translateY(20px) scaleY(0);
+  width: 150px;
   &-show{
     opacity: 1;
     transform: translateY(0px);
   }
   
   &__item{
+    margin: 5px 0;
     cursor: pointer;
     &:hover{
       color: var(--link-color);

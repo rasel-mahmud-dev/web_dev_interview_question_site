@@ -133,3 +133,8 @@ html[data-theme="dark"] {
 }
 .alert-show{ transform : translate(-50%, 25vh) !important  }
 .alert-hide{ transform :  translate(-50%, -18vh) !important }
+.loader_root{
+  margin-top: 20%;
+  display: flex;
+  justify-content: center;
+}

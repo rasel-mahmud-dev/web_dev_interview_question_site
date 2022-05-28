@@ -5,11 +5,37 @@ import { AppContext, AuthContext } from './index';
 
 import {appReducer, authReducer, postReducer} from "./reducer"
 
+export interface AuthState {
+  role: string,
+  email: string,
+  username: string,
+  _id: string,
+  avatar: string
+}
 
+export interface PostState {
+  post: any,
+  sidebarData: {},
+}
+
+
+interface Props{
+
+}
+
+interface State{
+  postState: PostState,
+  authState: AuthState,
+  appState: {
+    theme: string
+  }
+}
 
 export const Provider = (APP)=> {
   
-  return class extends PureComponent {
+  return class extends PureComponent<Props, State> {
+    
+    private actions: { dispatch: (action: { type: string; payload: any }) => void };
     
     constructor(props) {
       super(props);
@@ -58,7 +84,7 @@ const connect = (HOC)=>{
   return function (props){
     return (
       <AppContext.Consumer>
-        {((value) =>  (
+        {((value: any) =>  (
           <AuthContext.Consumer>
             {(authState)=>{
               return (

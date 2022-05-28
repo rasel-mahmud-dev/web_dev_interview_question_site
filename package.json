@@ -31,8 +31,6 @@
     "preact": "^10.7.2",
     "preact-lazy-route": "^1.0.1",
     "preact-router": "^4.0.1",
-    "react": "^18.1.0",
-    "react-router-dom": "^6.3.0",
     "serverless-http": "^3.0.1"
   },
   "devDependencies": {

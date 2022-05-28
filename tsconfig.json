@@ -9,7 +9,7 @@
     "jsx": "react",
     "outDir": "dist",
     "forceConsistentCasingInFileNames": true,
-//    "rootDir": "src/",
+    "rootDir": ".",
 //     include src dir
     "sourceRoot": ".",
     "inlineSourceMap": true,
@@ -17,7 +17,8 @@
     "resolveJsonModule": true
   },
   "include": [
-    "src"
+    "src",
+    "."
   ],
   "exclude": [
     "dist",

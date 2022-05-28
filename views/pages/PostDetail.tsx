@@ -133,14 +133,15 @@ function PostDetail(props) {
       setMessage("Please login first")
       return
     }
-    
-    if(changeMdRow) {
-      api.post("/api/update-post", {content: changeMdRow, _id: post._id}).then(response => {
+    let textarea = textAreaRef.current as HTMLTextAreaElement
+    let con = textarea.outerText
+    if(con) {
+      api.post("/api/update-post", {content: con, _id: post._id}).then(response => {
         if(response.status === 201){
           setMode("")
           const previewMD = document.getElementById("preview-md")
           previewMD.innerHTML = `
-            <pre>${marked.parse(changeMdRow)}</pre>
+            <pre>${marked.parse(con)}</pre>
           `
   
           let posts = null
@@ -154,18 +155,18 @@ function PostDetail(props) {
             if(updatedPostIndex !== -1){
               posts[updatedPostIndex] =  {
                 ...posts[updatedPostIndex],
-                content: changeMdRow,
+                content: con,
               }
             } else {
               posts.push({
                 ...post,
-                content: changeMdRow
+                content: con
               })
             }
           } else {
             posts = [{
               ...post,
-              content: changeMdRow
+              content: con
             }]
           }
           localStorage.setItem("posts", JSON.stringify(posts))

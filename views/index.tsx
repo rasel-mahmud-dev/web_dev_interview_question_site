@@ -3,12 +3,10 @@ import { render } from 'preact';
 import React from 'preact/compat';
 
 import { PureComponent } from 'preact/compat';
-import connect, {Provider} from "./store/connect";
+import connect, {AuthState, Provider} from "./store/connect";
 import HomePage from "./pages/HomePage";
 import Navigation from "./components/Navigation";
 import Router, {Route} from "preact-router";
-
-import LazyRoute from 'preact-lazy-route';
 
 
 import "./styles.scss"
@@ -21,13 +19,11 @@ import { createHashHistory } from 'history';
 // import LoginPage from "./pages/LoginPage";
 
 import AsyncRoute from "preact-async-route";
-
+import HelixCssLoader from "./components/HelixCSSLoader/HelixCSSLoader";
 
 function MyLoadingComponent(){
   return (
-    <div>
-      <h1 className="text-center">Loading...</h1>
-    </div>
+    <div className="loader_root"><HelixCssLoader /></div>
   )
 }
 
@@ -35,7 +31,8 @@ interface StateType{}
 interface PropsType{
   actions: {
     dispatch: (actionData: any)=> void
-  }
+  },
+  authState: null | AuthState
 }
 
 class App extends PureComponent<PropsType, StateType> {
@@ -72,6 +69,8 @@ class App extends PureComponent<PropsType, StateType> {
         <Navigation />
         <div class="spacer"/>
         <div className="container">
+    
+          
           {/* @ts-ignore*/}
           <Router history={createHashHistory()} >
             
@@ -79,42 +78,48 @@ class App extends PureComponent<PropsType, StateType> {
             
             <AsyncRoute
               path="/login"
-              getComponent={() => import('./pages/LoginPage').then(module => module.default)}
+              getComponent={() => import('./pages/LoginPage').then(module => module.default).catch(err=>{})}
               loading={MyLoadingComponent}
             />
             
             <AsyncRoute
               path="/registration"
-              getComponent={() => import('./pages/RegistrationPage').then(module => module.default)}
+              getComponent={() => import('./pages/RegistrationPage').then(module => module.default).catch(err=>{})}
               loading={MyLoadingComponent}
             />
              
              <AsyncRoute
               path="/:category_slug/:slug"
-              getComponent={() => import('./pages/PostDetail').then(module => module.default)}
+              getComponent={() => import('./pages/PostDetail').then(module => module.default).catch(err=>{})}
               loading={MyLoadingComponent}
             />
             
-              <LazyRoute
-                index={true}
-                path="/add-post"
-                component={() => import('./pages/AddPost')}
-                loading={MyLoadingComponent}
-              />
-              
-              <LazyRoute
-                index={true}
-                path="update-post/:slug"
-                component={() => import('./pages/AddPost')}
-                loading={MyLoadingComponent}
-              />
-              
-              <LazyRoute
-                index={true}
-                path="/:category_slug/:slug"
-                component={() => import('./pages/PostDetail')}
-                loading={MyLoadingComponent}
-              />
+            <AsyncRoute
+              index={true}
+              path="/add-post"
+              getComponent={() => this.props.authState
+                ? import('./pages/AddPost').then(module => module.default).catch(err=>{})
+                : import('./pages/LoginPage').then(module => module.default).catch(err=>{})}
+              loading={MyLoadingComponent}
+            />
+            
+            <AsyncRoute
+              index={true}
+              path="update-post/:slug"
+              getComponent={() => this.props.authState
+                ? import('./pages/AddPost').then(module => module.default).catch(err=>{})
+                : import('./pages/LoginPage').then(module => module.default).catch(err=>{})}
+              loading={MyLoadingComponent}
+            />
+            
+            <AsyncRoute
+              index={true}
+              path="/admin"
+              getComponent={() => this.props.authState && this.props.authState.role === "admin"
+                ? import('./pages/AdminPage').then(module => module.default).catch(err=>{})
+                : import('./pages/LoginPage').then(module => module.default).catch(err=>{})}
+              loading={MyLoadingComponent}
+            />
               
             {/*<Route index={true} path="/:category_slug/:slug" component={PostDetail} />*/}
           </Router>

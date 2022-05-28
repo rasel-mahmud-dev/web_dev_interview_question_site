@@ -60,6 +60,7 @@ const Navigation = (props)=>{
 			<div className={["panel", isOpen ? "panel-show" : ""].join(" ")}>
 				{ authState ? (
 					<>
+						<li className="panel__item"><Link href={`/admin`}>Admin Panel</Link></li>
 						<li onClick={handleLogout} className="panel__item">Logout</li>
 					</>
 				) : (

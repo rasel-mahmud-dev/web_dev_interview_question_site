@@ -88,17 +88,17 @@ const AddPost = (props)=>{
   
   
   function handleChange(e){
-    if(e.target.type === "checkbox"){
+    if(e.target.name === "is_public"){
       setPost({
         ...post,
         [e.target.name]: e.target.checked
       })
     } else {
-      if(e.target.contentEditable){
-        setPost({
-          ...post,
-          content: e.target.outerText
-        })
+      if (e.target.id === "autoResizing") {
+        // setPost({
+        //   ...post,
+        //   content: e.target.outerText
+        // })
       } else {
         setPost({
           ...post,
@@ -136,6 +136,38 @@ const AddPost = (props)=>{
   }
   
   
+  function updateLocalSidebarData(category_slug, slug, post, isNew){
+    let sidebarData = null
+    try {
+      sidebarData = JSON.parse(localStorage.getItem("sidebar_data"))
+    } catch (ex){
+    
+    }
+    
+    if (isNew) {
+        if(sidebarData && sidebarData[category_slug]){
+          sidebarData[category_slug].push(post)
+        } else {
+          sidebarData[category_slug] = [post]
+        }
+    } else {
+      if(sidebarData && sidebarData[category_slug]){
+        let index = sidebarData[category_slug].findIndex(post=>post.slug === slug)
+        if(index !== -1){
+          sidebarData[category_slug][index] = {
+            ...sidebarData[category_slug][index],
+            ...post,
+          }
+        } else {
+          sidebarData[category_slug].push(post)
+        }
+        // sidebarData[category_slug].push(post)
+      } else {
+        sidebarData[category_slug] = [post]
+      }
+    }
+    localStorage.setItem("sidebar_data", JSON.stringify(sidebarData))
+  }
   
   function savePost(e){
     e.preventDefault();
@@ -155,7 +187,7 @@ const AddPost = (props)=>{
     }
     
     if(props.path  === "/add-post"){
-      const { __v, created_at, _id, is_public, author_id, slug, ...data} = post
+      const { __v, created_at, _id, content, is_public, author_id, slug, ...data} = post
       let inComplete = ""
       let isFilled = true
       for (let postKey in data) {
@@ -166,8 +198,19 @@ const AddPost = (props)=>{
       }
   
       if(isFilled){
+  
+        let content = ""
+        if(mdEditor.current) {
+          content = (mdEditor.current as HTMLDivElement).outerText
+        }
+        if(content === ""){
+          setMessage("Please provide post content")
+          return;
+        }
+        
         api.post("/api/add-post", {
           ...data,
+          content,
           is_public: post.is_public,
           slug: slugify(data.title),
           author_id: props.authState._id
@@ -185,7 +228,7 @@ const AddPost = (props)=>{
               posts = [response.data]
             }
             localStorage.setItem("posts", JSON.stringify(posts))
-            
+            updateLocalSidebarData(post.category_slug, post.slug, response.data,true)
             localStorage.removeItem("state")
           }
         }).catch(ex => {
@@ -235,6 +278,7 @@ const AddPost = (props)=>{
               } else {
                 posts = [response.data]
               }
+              updateLocalSidebarData(post.category_slug, post.slug,  response.data, false)
               localStorage.setItem("posts", JSON.stringify(posts))
             }
           }).catch(ex => {
@@ -290,7 +334,6 @@ const AddPost = (props)=>{
         {/*  placeholder="Post Summary"*/}
         {/*  onChange={handleChange}*/}
         {/*/>*/}
-        
     
           <div className="input-group">
             <label>Post Category</label>
@@ -330,13 +373,9 @@ const AddPost = (props)=>{
             <button type="submit" className="btn btn-primary">{ props.path  === "/add-post" ? "Add Post" : "Update"}</button>
           </div>
       </form>
-  
       
-      <form onSubmit={saveCategory}  className="add-post-form">
-    
+      <div className="add-post-form max-w-full">
         <h1>Add a Category</h1>
-    
-    
         <InputGroup
           label="Category Name"
           value={categoryName}
@@ -344,8 +383,8 @@ const AddPost = (props)=>{
           placeholder="Name"
           onChange={(e)=>setCategoryName(e.target.value)}
          name="category-name"/>
-        <button className="btn btn-primary">Add A Category</button>
-      </form>
+        <button type="button" onClick={saveCategory} className="btn btn-primary">Add A Category</button>
+      </div>
 
     </div>
     

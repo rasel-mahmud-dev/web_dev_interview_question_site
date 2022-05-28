@@ -127,6 +127,13 @@ pre{
   .action{
     display: none;
   }
+  a{
+    text-decoration: none;
+    color: var(---para-color);
+    &:hover{
+      color: white;
+    }
+  }
 }
 .label{
   font-weight: 400;
