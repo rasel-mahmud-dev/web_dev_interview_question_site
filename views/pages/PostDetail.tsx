@@ -186,7 +186,7 @@ function PostDetail(props) {
     if(mode === "preview") {
       setMode("edit")
       if(textAreaRef.current){
-        textAreaRef.current.innerText = changeMdRow
+        (textAreaRef.current as HTMLDivElement).innerText = changeMdRow
       }
       
     } else {
@@ -239,7 +239,7 @@ function PostDetail(props) {
             className={["content_edit_mode mdEditor", mode === "edit" ? "block": "none"].join(' ')}
           />
          
-           <div id="preview-md" class={[(mode !== "edit" ||  mode === "preview" ) ? "block": "none"].join(" ")}/>
+           <div id="preview-md" class={[(mode !== "edit") ? "block": "none"].join(" ")}/>
           
         </div>
 			</div>

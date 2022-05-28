@@ -19,9 +19,10 @@ export interface Post {
   summary: string,
   category_slug: string,
   content: string,
-  is_public: boolean
+  is_public: boolean,
+  author_id?: string
+  _id?: string
 }
-
 export interface User {
   username: string,
   avatar?: string

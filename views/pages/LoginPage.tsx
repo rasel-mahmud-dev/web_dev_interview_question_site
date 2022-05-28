@@ -1,10 +1,9 @@
 
 import "./styles.scss"
 import api from "../apis";
-import store from "../store";
 import { route } from 'preact-router';
 import React from "preact/compat";
-import {useEffect, useState} from "preact/hooks";
+import { useState} from "preact/hooks";
 import connect from "../store/connect";
 import { Link } from "preact-router";
 import InputGroup from "../components/InputGroup";

@@ -11,7 +11,7 @@ const Collapase = (props) => {
 
   const { state, id, children } = props 
 
-  const html = React.createRef(null)
+  const html = React.createRef()
   let activeId = null;
 
   if(typeof state === 'object'){

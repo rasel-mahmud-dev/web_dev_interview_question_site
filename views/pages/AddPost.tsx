@@ -72,7 +72,7 @@ const AddPost = (props)=>{
               })
             }
             if(mdEditor.current) {
-              mdEditor.current.innerText = response.data.content
+              (mdEditor.current as HTMLDivElement).innerText = response.data.content
             }
             setPost({...response.data})
           }
@@ -307,7 +307,7 @@ const AddPost = (props)=>{
           </div>
         
           <div className="input-group checkbox-group">
-            <input onChange={handleChange} id="isPublic" type="checkbox" name="is_public" checked={post.isPublic} />
+            <input onChange={handleChange} id="isPublic" type="checkbox" name="is_public" checked={post.is_public} />
             <label htmlFor="isPublic">is public</label>
           </div>
         

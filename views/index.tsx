@@ -31,7 +31,14 @@ function MyLoadingComponent(){
   )
 }
 
-class App extends PureComponent {
+interface StateType{}
+interface PropsType{
+  actions: {
+    dispatch: (actionData: any)=> void
+  }
+}
+
+class App extends PureComponent<PropsType, StateType> {
   
   componentDidMount() {
   
@@ -59,11 +66,13 @@ class App extends PureComponent {
   
   
   render(props) {
+
     return (
       <div>
         <Navigation />
         <div class="spacer"/>
         <div className="container">
+          {/* @ts-ignore*/}
           <Router history={createHashHistory()} >
             
             <Route index={true} path="/" component={HomePage} />

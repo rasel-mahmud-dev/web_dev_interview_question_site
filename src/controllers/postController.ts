@@ -3,6 +3,7 @@ import {NextFunction, Request, Response} from "express";
 import mongoose from "mongoose";
 import slugify from "../utils/slugify";
 import {RequestWithSession} from "../types";
+import {CategoryType} from "../models/Category";
 
 
 export const getCategories = async (req: Request, res: Response, next:NextFunction)=> {
@@ -143,14 +144,14 @@ export const addCategoryHandler =   async (req: Request, res: Response, next:Nex
     return res.status(409).json({message: categoryName + " already exists"})
   }
   
-  let newCategory  = new Category({
+  let newCategory: any  = new Category({
     name: categoryName,
     slug: slugify(categoryName)
   })
   
   
   try{
-    newCategory = await newCategory.save()
+    newCategory  = await newCategory.save()
     if(newCategory) {
       res.status(201).send({
         name: newCategory.name,

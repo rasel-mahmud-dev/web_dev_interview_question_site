@@ -1,7 +1,7 @@
-import mongoose, {Mongoose, Schema, Types} from 'mongoose';
+import mongoose, { Schema} from 'mongoose';
 
-export interface PostType{
-  _id: string
+export interface CategoryType{
+  _id: mongoose.Schema.Types.ObjectId
   name: string
   slug: string
 }
